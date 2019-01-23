@@ -747,11 +747,112 @@ Unless you explicitly need to deal with pointers as arguments, if you want to si
 As functions can accept pointers as arguments, it should make sense that functions can return pointers, too:
 
 ```
-int* func() {
+int *fun() {
     int y = 10;
     return &y;
 }
 ```
+
+Or, if using references:
+
+```
+int &fun() {
+    int y = 10;
+    return y;
+}
+```
+
+There's a big problem with this, though. Recall that all variables only last until the lifetime of the function; when a function exits, all the variables inside it are lost. So when you use the returned pointer or reference, you'll find that while the address still exists, the thing it's pointing to doesn't anymore:
+
+<div class="split">
+<div>
+**Code** ([Run here.](http://pythontutor.com/cpp.html#code=%23include%20%3Ciostream%3E%0Ausing%20namespace%20std%3B%0A%0Aint%20*fun%28%29%20%7B%0A%20%20int%20x%20%3D%2010%3B%0A%20%20return%20%26x%3B%0A%7D%0A%0Aint%20main%28%29%20%7B%0A%20%20int%20*a%20%3D%20fun%28%29%3B%0A%20%20cout%20%3C%3C%20a%20%3C%3C%20endl%3B%0A%20%20cout%20%3C%3C%20*a%20%3C%3C%20endl%3B%0A%20%20return%200%3B%0A%7D&curInstr=6&mode=display&origin=opt-frontend.js&py=cpp&rawInputLstJSON=%5B%5D))
+
+~~~cpp
+#include <iostream>
+using namespace std;
+
+int *fun() {
+    int x = 10;
+    return &x;
+}
+
+int main() {
+    int *a = fun();
+    cout << a << endl;
+    cout << *a << endl;
+    return 0;
+}
+~~~
+
+</div>
+<div>
+**Output**
+
+```
+0xfff000bbc
+[💩]
+```
+
+**Visualization**
+
+***************************************************
+*
+* +--------+---+
+* | int* a | *-+------> 💩
+* +--------+---+
+*
+***************************************************
+
+</div>
+</div>
+
+To fix this, we have to find a way to make the variables last past the lifetime of the function it is declared in. One way to do this is to make the variable static:
+
+```
+int *fun() {
+    static int y = 10;
+    return &y;
+}
+```
+
+Since static variables are stored separate from the function it is in, `y` won't be wiped from memory when `fun()` is called. We can even treat it as any other variable, assigning and updating to it when we need:
+
+<div class="split">
+<div>
+**Code**
+
+~~~cpp
+#include <iostream>
+using namespace std;
+
+int &fun() {
+    static int x = 10;
+    return &x;
+}
+
+int main() {
+    fun() = 30;
+    fun() += 5;
+    cout << fun() << endl;
+    return 0;
+}
+~~~
+
+</div>
+<div>
+**Output**
+
+```
+35
+```
+
+</div>
+</div>
+
+This is insanely handy when we want to directly access things in our code through a safe middle-man like a function. This will probably make more sense once we dive into classes and object-oriented programming later on.
+
+Again, as with function arguments, if you just want direct access to a variable and you don't need to explicitly deal with pointers, references are your best bet, since it's safer and requires less syntax to use.
 
 (#) References and further reading
 
