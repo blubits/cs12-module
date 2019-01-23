@@ -1,0 +1,977 @@
+<meta charset="utf-8">
+
+**C++ for Python programmers**
+
+> In C++ it's harder to shoot yourself in the foot, but when you do, you blow off your whole leg.
+>
+>       -- Bjarne Stroustrup
+
+Welcome to literal hell! From Python in CS11, we'll be moving over to C++ in CS12. C++ is a programming language invented in the 1970s by Bjarne Stroustrup. You'll probably find, even just from the classic "Hello, world!" program, that C++ is a very different playing field than Python. The constructs might be the same at times, but the framework you use to code up your solutions is very, very different.
+
+That's because C++, to put it simply, allows you to "play dirtier" than Python. In Python, you probably take the expressiveness of the language for granted. Anything you wanted to do in the language - maybe capitalize a string, or play around with lists of items - you could do relatively easily.
+
+In contrast to Python's "batteries included" model, however, C++ forces you to do a lot of stuff on your own. It offers you very little out of the box, so you will have to rework your thinking a lot when you're solving problems. In exchange for this, though, you might find that C++ gives you flexibility and speed in return.
+
+# Why C++?
+
+So why C++ exactly? Here are a few reasons why you might choose C++ over Python.
+
+1. **Flexibility.** While you might need to do a lot of stuff on your own, C++ gives you a lot of flexibility over how to do it. This is because, unlike Python, C++ offers you more control over the parts of your computer Python normally manages by itself, like memory. This means that you can do more fine-tuned things in C++. This also means that...
+
+2. **Speed**: C++ is infinitely faster than Python. Look at [this comparison](https://benchmarksgame-team.pages.debian.net/benchmarksgame/faster/python3-gpp.html) between Python and C++. Python can be up to *200 times slower* than C++ for certain programs. That's because Python and C++ are fundamentally different in terms of how they run code:
+
+    Python **interprets** your code: that is, it passes it to a secondary program that goes through your code, line by line, and manages it as it runs. You can do a lot more with less with Python, as a result, since the interpreter can guess what you mean; but you sacrifice speed, since the interpreter needs to take time to think about what to do next.
+
+    In contrast, C++ **compiles** your code: your compiler actually converts your code into something the computer can understand. You'll have to tell the compiler what exactly is it that you want to do more often than not, since it can't guess for you; but since things run much closer to the metal, the differences in speed are enormous.
+
+    C++ also uses a lot less memory than Python. Python keeps track of a lot of things, separate from your program, so it can figure out what you mean more easily. Since C++ doesn't have this overhead, it consumes a lot less memory.
+
+C++ also offers a major drawback: **expressiveness**. As mentioned, you have to tell C++ what you mean most of the time to make it do your bidding. You can't just, say, add two lists together; you actually have to tell C++ how to add those lists. Not only is that more cumbersome, it's also very **error-prone**. A lot of the errors that Python catches while running your program - an `IndexError`, for example - won't be caught by C++! You might instead get values that don't make sense, or worse, you'll be greeted by the deadly `Segmentation fault`.
+
+These reasons are why you may find that Python and C++ are used for different types of applications. Scientists, statisticians, and those dabbling in machine learning or web development prefer Python for its "batteries included" nature, which means that they can focus on developing their program logic and not things that are unimportant to them, like memory. Application developers and those who develop in low-memory systems like Arduinos will prefer C++ to allow their programs to run faster. In fact, a lot of the applications you use on the desktop - Chrome, Firefox, Photoshop, and even parts of Windows itself - are written in C++ precisely because of this reason. (Which makes you wonder why Chrome still uses a lot of memory, and what would happen if it was implemented in Python.)
+
+# Basics of C++
+
+Fortunately for us, C++ and Python share a lot of the same core constructs. We'll have to relearn a few things that C++ does differently, though.
+
+Let's start with the "empty" program. How do you make a program that does nothing?
+
+<div class="comparison">
+<div>
+**Python**
+</div>
+<div>
+**C++**
+
+```cpp
+int main() {
+    return 0;
+}
+```
+</div>
+</div>
+
+In Python, you just do - well, nothing! Python will run an empty file without complaints and exit silently.
+
+In C++, however, you have to at least type something if you want to make a program. C++ figures out what to run first by looking for a function called `main()`. It then runs everything inside `main()`, and when it's done, the program exits. In Python, you can do something similar:
+
+```python
+def main():
+    return 0
+
+main()
+```
+
+Think of C++ as doing something like this every time implicitly when the program runs.
+
+Why the `return 0;` then? Simply put, it just tells our computer that the program exited successfully. More on that soon, but you can return anything you want as long as it's an integer.
+
+Notice, too, that semicolon`;` beside the `return 0`. Each statement or line of code in C++ must end with a semicolon, designating the end of that statement. In a similar vein, braces `{}` denote a block of code under a function definition (or `if` and `while` statements, later on), whereas you would simply indent your code in Python.
+
+## Data types
+
+Which brings us to the second most important point in C++: It's very picky about types. Let's try to declare some variables:
+
+<div class="comparison">
+<div>
+**Python**
+
+```python
+x = 5
+y = 3.1415
+z = "Hello!"
+```
+</div>
+<div>
+**C++**
+
+```cpp
+#include <string>
+using namespace std;
+
+int main() {
+    int x = 5;
+    float y = 3.1415;
+    string z = "Hello!";
+    return 0;
+}
+```
+</div>
+</div>
+
+In Python, you simply assign a value to a name. Python tries to figure out what type your variable is by itself. You can even freely swap the values names are associated with, like this:
+
+```python
+x = 5
+x = "Hello"     # valid!
+```
+
+In C++, though, variables are **strongly typed**: you'll have to specify what type a certain variable is associated with:
+
+```cpp
+int x = 5;
+```
+
+This means that you can actually declare a variable first, assigning a value to it later down the line:
+
+```cpp
+int x;
+// ... code ...
+x = 5;
+```
+
+!!! warning Gotcha!
+    Don't forget to initialize the variable before you use it! C++ doesn't complain when you do this, and it'll do unpredictable things that might cause bugs or crashes. If your code is outputting some unexplained garbage value, chances are you forgot to initialize some variables in your code.
+
+You can even declare multiple variables of the same type at once, choosing to initialize some of them if need be:
+
+```cpp
+int x, y = 10, z;
+```
+
+Once you've associated a variable with a type, you can't change it again. That is, you can't do something like
+
+```cpp
+int x = 5;
+x = "Hello!";   // invalid!
+```
+
+or even
+```cpp
+int x = 5;
+string x = "Hello!";    // invalid!
+```
+
+Once a variable is a certain type, it stays that way **forever**. At least until your program ends.
+
+C++, like Python, has a few core data types:
+
+* **`int`**, the integer data type. Unlike Python, where you can represent integers without bound, C++ limits you in terms of the integers you can represent. (This has something to do with how C++ stores integers as bits; more on that in the next chapter.) There are a few data types in the family of ints:
+
+    - **`int`**, ranging from about negative 2 billion to 2 billion ($\left[-2^{31} - 1, 2^{31} - 1\right]$);
+    - **`unsigned int`**, expressing a bit more than int in exchange for being able to represent only positive numbers ($\left[0, 2^{32} - 1\right]$);
+    - **`long long int`** and **`unsigned long long int`**, ranging from about negative to positive 9 quintillion for the latter ($\left[-2^{63} - 1, 2^{63} - 1\right]$) and zero to about 18 quintillion for the former ($\left[0, 2^{64} - 1\right]$).
+
+* **`char`**, the character data type. C++ does not have a "core" string type. Instead, it has a char type, representing [ASCII](https://en.wikipedia.org/wiki/ASCII) characters in your code. This is more than enough for your uses if you stick with English.
+
+    Note, also, that this is very different from a string of length one. Really, `char` acts more like an int. More on that later.
+
+* **`float`**, the floating-point data type, and its cousin **`double`**, a more precise version of the float.
+
+* **`bool`**, the Boolean data type, that represents `true` or `false` (important - not `True` or `False` like Python!)
+
+To use strings in C++, you'll have to import libraries that aren't included by default. To import libraries, use the `#include` directive, which tells our compiler that we want to use a certain library. For example, `#include <string>` includes the `<string>` library, which enables us to use strings. We'll be discussing a few more libraries in a bit.
+
+`using namespace std;` is a bit too complicated to explain right now, but think of it as a necessity whenever we need to import and use libraries we include.
+
+## I/O
+
+Now, let's try to output something.
+
+<div class="comparison">
+<div>
+**Python**
+
+```python
+print("Hello, world!")
+```
+</div>
+<div>
+**C++**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello, world!" << endl;
+}
+```
+</div>
+</div>
+
+In Python, printing something to the screen is as simple as calling `print()`. In C++, however, we have to use `cout`, part of the `<iostream>` library which we have included here.
+
+While `print()` was our interface to standard output - where what we printed ended up - C++'s `cout` is more of a direct representation of it. We can redirect values to `cout` by using the insertion operator `<<`. Think of it like an arrow, pointing from the value we want to display to `cout`, with the arrow indicating that we want to put in the value into `cout` for printing.
+
+`endl` will create a fool-proof newline in your output. `cout` doesn't do it on its own, so make sure you output `endl` when you need to. You can even redirect multiple things at once - a bit like adding strings, except nothing's actually being added.
+
+Asking input from the user in Python is very different than what you're probably used to in Python:
+
+<div class="comparison">
+<div>
+**Python**
+
+```python
+name = input("Hi! What's your name? > ")
+print("Hello, " + name + "!")
+```
+</div>
+<div>
+**C++**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    string name;
+    cout << "Hi! What's your name? > "
+    cin >> name;
+    cout << "Hello, " << name << "!" << endl;
+}
+```
+</div>
+</div>
+
+In Python, you get input through the `input()` function, which gets an entire line of input from the user. This makes it more reliable for getting input, but simple things like getting two numbers in the same line requires a lot of work:
+
+```python
+line = input("Input two numbers separated by a space: ")
+numbers = line.split(" ")
+x = int(numbers[0])
+y = int(numbers[1])
+```
+
+C++, in contrast, uses `cin`, also part of the `<iostream>` library. `cin` doesn't take in input per line - rather, it actually does the job of parsing the input itself. The extraction operator `>>` does the job of extracting a value corresponding to the data type of a certain variable from the input. This makes asking for, say, two numbers from the user is as simple as doing this:
+
+```cpp
+int x, y;
+cout << "Input two numbers separated by a space: ";
+cin >> x >> y;
+```
+
+C++ does the heavy lifting of converting input into the correct data type by itself! You can also chain extraction operators together to get multiple variables at once.
+
+!!! warning Gotcha!
+    While `cin` is very good at getting input, some of its behaviors might surprise you. Take, for example, asking a string from the user:
+
+    <div class="comparison">
+    <div>
+    **Code**
+
+    ```cpp
+    #include <iostream>
+    using namespace std;
+
+    int main() {
+        string name;
+        cout << "Hi! What's your name? > "
+        cin >> name;
+        cout << "Hello, " << name << "!" << endl;
+    }
+    ```
+    </div>
+    <div>
+    **Terminal**
+
+    ```
+    Hi! What's your name? John Stuart
+    Hello, John!
+    ```
+    </div>
+    </div>
+
+    Getting a string from `cin` will only get the first token; it will stop when it encounters a string. So if your name has two words in it, for example, simply using `cin >> name` won't work. There are ways to combat this, though, but that's a bit too advanced for now.
+
+## Expressions
+
+All the expressions you've come to expect in Python will work in C++:[^fn1]
+
+<div class="comparison">
+<div>
+**Python**
+
+```python
+a = 2 + 3
+b = 3.14 * 2 * 5
+c = 5 / 2
+d = "a" + "b"
+e = 100 % 3
+```
+</div>
+<div>
+**C++**
+
+```cpp
+int a = 2 + 3;
+float b = 3.14 * 2 * 5;
+double c = 5 / 2;
+string d = "a" + "b";
+long long int e = 100 % 3;
+```
+</div>
+</div>
+
+Take note of a few things, though:
+
+* Like Python, the types of your values will influence the resulting type of the expression's result. Unlike Python, however, this also applies to the division operator:
+
+    | Expression | Python | C++   |
+    | ---------- | ------ | ----- |
+    | `5 / 2`    | `2.5`  | `2`   |
+    | `5 / 2.0`  | `2.5`  | `2.5` |
+
+* The type of the variable you're storing the expression in will also affect the resulting variable:
+
+    ```cpp
+    int C = 3.14 * 2 * 5;
+    cout << C << endl;
+    ```
+
+    This will output `31` instead of `31.4`, since `C` is an `int`.
+
+* C++ doesn't have a built-in exponentiation operator `**` or string multiplication `"a" * 3`.
+
+* Operator precedence works exactly the same way as Python, but you'll probably want to use parentheses `()` to make your code more understandable, also like in Python.
+
+[^fn1]: From here on out, we'll be leaving out the "boilerplate code" (`#include <iostream>`, etc.) unless needed, to emphasize comparison between C++ and Python.
+
+C++'s assignment operators also work like Python's:
+
+<div class="comparison">
+<div>
+**Python**
+
+```python
+a += 2
+b *= 3
+c /= 2.0
+
+i = 0
+i += 1
+```
+</div>
+<div>
+**C++**
+
+```cpp
+a += 2;
+b *= 3;
+c /= 2.0;
+
+int i = 0;
+i++;
+```
+</div>
+</div>
+
+Notice the `++` operator. In Python, incrementing or decrementing a variable by 1 is as simple as doing `x += 1` or `x -= 1.` In C++, the increment `++` and decrement `--` operators work the same way. You may place them before the variable `++x` or after `x++`; this will affect when the variable will be incremented or decremented. What that exactly means can be best seen in this example:
+
+<div class="comparison">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int i = 5;
+
+    cout << "i++ returns " << i++ << endl;
+    cout << "i is now " << i << endl;
+
+    cout << "++i returns " << ++i << endl;
+    cout << "i is now " << i << endl;
+
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+i++ returns 5
+i is now 6
+++i returns 7
+i is now 7
+```
+</div>
+</div>
+
+The post-decrement operator, `i++`, returns itself first, then increments; the pre-decrement operator, `++i`, increments first, then returns itself. `i++` will return the "old" value, while `++i` returns the "new" value. `i--` and `--i` works in the same way.
+
+Comparison operators work exactly the same way as in Python, but `and`, `or`, and `not` have been replaced with `&&`, `||`, and `!`:
+
+<div class="comparison">
+<div>
+**Python**
+
+```python
+x = 5
+y = 3
+x < y                           # False
+x >= y                          # True
+x == y                          # False
+x != y                          # True
+x > 0 and y < 0                 # False
+x % 2 == 0 or y % 3 == 0        # True
+not (x > y)                     # False
+```
+</div>
+<div>
+**C++**
+
+```cpp
+int x = 5;
+int y = 3;
+x < y;                          // false
+x >= y;                         // true
+x == y;                         // false
+x != y;                         // true
+x > 0 && y < 0;                 // false
+x % 2 == 0 || y % 2 == 0;       // true
+!(x > y);                       // false
+```
+</div>
+</div>
+
+Take note, however, that C++ doesn't support comparison chaining. In Python, something like
+
+```python
+0 <= x < y      # False
+```
+
+would work as expected. In C++, however, statements like this always evaluate to `true`! That's because, unlike Python, C++ simply interprets the statement from left to right, like this:
+
+```cpp
+0 <= x < y
+true < y
+1 < y
+true
+```
+
+To get expected behavior, you'd probably want to do something like this instead:
+
+```cpp
+(0 <= x) && (x < y)
+```
+
+# Conditionals
+
+C++'s `if` statements work very similar to Python's:
+
+<div class="comparison">
+<div>
+**Python**
+
+```python
+x = 5
+y = 3
+
+if x > y:
+    print("x is greater than y.")
+
+
+if y > x:
+    print("y is greater than x.")
+else:
+    print("y is less than x.")
+
+
+if x % 2 == 0:
+    if y % 2 == 0:
+        print("x and y are even.")
+    else:
+        print("x is even.")
+elif y % 2 == 0:
+    print("y is even.")
+else:
+    print("neither x nor y are even.")
+```
+</div>
+<div>
+**C++**
+
+```cpp
+int x = 5;
+int y = 3;
+
+if (x > y) {
+    cout << "x is greater than y." << endl;
+}
+
+if (y > x) {
+    cout << "y is greater than x." << endl;
+} else {
+    cout << "y is less than x." << endl;
+}
+
+if (x % 2 == 0) {
+    if (y % 2 == 0) {
+        cout << "x and y are even." << endl;
+    } else {
+        cout << "x is even." << endl;
+    }
+} else if (y % 2 == 0) {
+    cout << "y is even." << endl;
+} else {
+    cout << "neither x nor y are even." << endl;
+}
+```
+</div>
+</div>
+
+As before, braces replace indentation as our markers for when lines of code fall under a statement, like `if` or `else`. Also note, however, that conditions need to be wrapped in parentheses `()` in C++; this is optional in Python.
+
+As a consequence, indentation actually doesn't matter in C++. You might as well have typed this, and C++ would happily run your code:
+
+```cpp
+if (x % 2 == 0) {
+if (y % 2 == 0) {
+cout << "x and y are even." << endl;
+} else {
+cout << "x is even." << endl;
+}
+} else if (y % 2 == 0) {
+cout << "y is even." << endl;
+} else {
+cout << "neither x nor y are even." << endl;
+}
+```
+
+But please don't do this. Indentation is still useful to denote the hierarchy of code under `if` statements and the like, so indent your code, and indent it *consistently*; lines of code under the same "level" must be indented similarly.
+
+If you'd like, you may leave out the braces if you only have one line of code underneath it:
+
+```cpp
+if (y > x)
+    cout << "y is greater than x." << endl;
+else
+    cout << "y is less than x." << endl;
+```
+
+But again, don't do this; it'll make things harder for you in the long run. Say you want to also output something else under the else:
+
+```cpp
+if (y > x)
+    cout << "y is greater than x." << endl;
+else
+    cout << "y is less than x." << endl;
+    cout << "doesn't mean y is less important, though." << endl;
+```
+
+You might be surprised to find out that, even if `y > x` is True, the line you just added still runs. That's because `else` will only cover the line directly below it. In effect, what C++ really sees is this:
+
+```cpp
+if (y > x)
+    cout << "y is greater than x." << endl;
+else
+    cout << "y is less than x." << endl;
+cout << "doesn't mean y is less important, though." << endl;
+```
+
+What's worse, if you added something below the `if` instead:
+
+```cpp
+if (y > x)
+    cout << "y is greater than x." << endl;
+    cout << "good job, y!" << endl;
+else
+    cout << "y is less than x." << endl;
+```
+
+C++ will see this:
+
+```cpp
+if (y > x)
+    cout << "y is greater than x." << endl;
+cout << "good job, y!" << endl;
+else
+    cout << "y is less than x." << endl;
+```
+
+so it will see that the `else` is detached from the `if`, and C++ won't compile your code.
+
+If you added braces in the first place, you won't find any mishaps with your code, since `else` will run anything inside the brace, or block of code, after it:
+
+```cpp
+if (y > x) {
+    cout << "y is greater than x." << endl;
+} else {
+    cout << "y is less than x." << endl;
+    cout << "doesn't mean y is less important, though." << endl;
+}
+```
+
+It doesn't matter where you place your braces. Some people like the style seen above, where lines of code are more closely tied to the statements they belong to. Others prefer something more like this:
+
+```cpp
+if (y > x)
+{
+    cout << "y is greater than x." << endl;
+}
+else
+{
+    cout << "y is less than x." << endl;
+    cout << "doesn't mean y is less important, though." << endl;
+}
+```
+
+You can even go all out and do something like this:
+
+```cpp
+if (y > x)
+{ cout << "y is greater than x." << endl;
+} else
+
+
+{ cout << "y is less than x." << endl;
+    cout << "doesn't mean y is less important, though." << endl;}
+```
+
+It doesn't really matter what you pick, as long as (1) you can easily see what lines of code are under which statement and (2) you or your team can agree upon which style to consistently use.
+
+# Loops
+
+## `while` and `do-while`
+
+The `while` loop also works exactly the same way as Python's, with all the braces and parentheses we need as in C++'s `if`.
+
+C++'s `if` statements work very similar to Python's:
+
+<div class="comparison">
+<div>
+**Python**
+
+```python
+i = 0
+j = 10
+
+while i < j:
+    print(i, j)
+    i += 1
+    j -= 1
+```
+</div>
+<div>
+**C++**
+
+```cpp
+int i = 0;
+int j = 10;
+
+while (i < j) {
+    cout << i << " " << j << endl;
+    i++;
+    j--;
+}
+```
+</div>
+</div>
+
+All the standard constructs and keywords in Python - `break`, `continue`, and infinite loops `while (true)` - work in C++ as well.
+
+C++ has additional looping constructs, too. Say you want to run some code at least once - asking input from the user for a menu, for example - and only check the condition at the end. The `do-while` loop in C++ enables us to do this:
+
+```cpp
+string response;
+do {
+    cout << "What do you want to do? (Type 'exit' to exit) > "
+    cin >> response;
+} while (response != "exit");
+```
+
+In Python, you'll have to create an infinite loop and check conditions at the end:
+
+```python
+while True:
+    response = input("What do you want to do? (Type 'exit' to exit) > ")
+    if response == "exit":
+        break
+```
+
+
+</div>
+</div>
+
+## `for`
+
+You might also recall implementing counters in Python, counting up or down from a certain value until you reach a certain condition:
+
+```python
+i = 1
+while i <= 100:
+    if i % 15 == 0:
+        print("FizzBuzz")
+    elif i % 5 == 0:
+        print("Buzz")
+    elif i % 3 == 0:
+        print("Fizz")
+    else:
+        print(i)
+    i += 1
+```
+
+While you can do something very similar in C++, the `for` statement allows us to do counters much like this one very differently:
+
+```cpp
+for (int i = 1; i <= 100; i++) {
+    if (i % 15 == 0) {
+        cout << "FizzBuzz" << endl;
+    } else if (i % 5 == 0) {
+        cout << "Buzz" << endl;
+    } else if (i % 3 == 0) {
+        cout << "Fizz" << endl;
+    } else {
+        cout << i << endl;
+    }
+}
+```
+
+Here's a quick side-by-side syntax comparison of the `for` loop and a `while` loop that functions the same way:
+
+<div class="comparison">
+<div>
+**`for`**
+
+```cpp
+
+for (int i = 1; i <= 100; i++) {
+    if (i % 15 == 0) {
+        cout << "FizzBuzz" << endl;
+    } else if (i % 5 == 0) {
+        cout << "Buzz" << endl;
+    } else if (i % 3 == 0) {
+        cout << "Fizz" << endl;
+    } else {
+        cout << i << endl;
+    }
+}
+```
+</div>
+<div>
+**`while`**
+
+```cpp
+int i = 1;
+while (i <= 100) {
+    if (i % 15 == 0) {
+        cout << "FizzBuzz" << endl;
+    } else if (i % 5 == 0) {
+        cout << "Buzz" << endl;
+    } else if (i % 3 == 0) {
+        cout << "Fizz" << endl;
+    } else {
+        cout << i << endl;
+    }
+    i++;
+}
+```
+</div>
+</div>
+
+Notice that in the for loop, you'll have to declare three things: `(initialization; condition; increment)`. The initialization statement is responsible for initializing your counter variable, the condition statement checks when to end the for loop, and the increment statement changes your counter variable to bring it closer to the end of the loop.
+
+As in the `while` loop, initialization runs first only once. The condition is then checked, the body is executed, and then the counter is incremented; the loop is ran until the condition is false.
+
+The `for` loop is flexible. You can create multiple counters:
+
+```cpp
+for (int i = 0, j = 10; i < j; i++, j++) {
+    cout << i << " " << j << endl;
+}
+```
+
+You can even leave out the initialization, condition, and/or the increment statements, although exercise caution while doing so; you might as well use a `while` if you do this so your code is clearer.
+
+As you might have noticed, C++'s `for` loop is not similar to Python's `for` loop. But you might use it in exactly the same contexts, especially with Python's `range`:
+
+<div class="comparison">
+<div>
+**Python**
+
+```python
+for i in range(1, 101):
+    if i % 15 == 0:
+        print("FizzBuzz")
+    elif i % 5 == 0:
+        print("Buzz")
+    elif i % 3 == 0:
+        print("Fizz")
+    else:
+        print(i)
+    i += 1
+```
+</div>
+<div>
+**C++**
+
+```cpp
+for (int i = 1; i <= 100; i++) {
+    if (i % 15 == 0) {
+        cout << "FizzBuzz" << endl;
+    } else if (i % 5 == 0) {
+        cout << "Buzz" << endl;
+    } else if (i % 3 == 0) {
+        cout << "Fizz" << endl;
+    } else {
+        cout << i << endl;
+    }
+}
+```
+</div>
+</div>
+
+But don't be misled by this. Python's `for` loop operates on lists and list-like objects that support iterating over their contents, like lists and ranges. C++'s `for` loop, meanwhile, doesn't need to access anything remotely close to a list at all; it's simply a more understandable way to create counters in your code.
+
+# Functions
+
+Functions in C++ also work quite similarly to Python, except you have to specify the types of each argument as well as the function itself.
+
+<div class="comparison">
+<div>
+**Python**
+
+```python
+
+
+
+def twice(x):
+    return 2 * x
+
+def square(x):
+    return x * x
+
+print(twice(square(5)))    # 50
+```
+</div>
+<div>
+**C++**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int twice(int x) {
+    return 2 * x;
+}
+
+int square(int x) {
+    return x * x;
+}
+
+int main() {
+    cout << twice(square(5)) << endl;  // 50
+    return 0;
+}
+```
+</div>
+</div>
+
+The type before the function name signifies the type of the return value. Each argument must also have an associated type. If you don't want to return anything, set the return type as `void`:
+
+```cpp
+void print(string s) {
+    cout << s << endl;
+}
+```
+
+## Prototypes
+
+In Python, you can't use a function before you use it, since the interpreter wouldn't know what the function returns unless it sees it first:
+
+```python
+C = circumference(5)    # error!
+
+def circumference(r):
+    return 2 * 3.14 * r
+```
+
+C++ is a bit more flexible with this. Since your compiler gets to see the entire code beforehand, you can actually declare a **function prototype**, sort of a promise to the compiler that you will declare a function that you will use now later on:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+double circumference(double r);
+
+int main() {
+    cout << circumference(5.0) << endl;
+    return 0;
+}
+
+double circumference(double r) {
+    return 2 * 3.14 * r;
+}
+```
+
+The function prototype is simply the function without the body. Make sure that you implement what you prototype, unless you want your compiler to throw an error.
+
+## Signatures and overloading
+
+C++ also allows you to declare multiple functions with the same name! As long as their **function signatures** are distinct - that is, even though they have the same names, they *return* or *accept* different types.
+
+```cpp
+// this is okay!
+int twice(int n) {
+    return 2 * n;
+}
+
+int twice(int m, int n) {
+    return 2 * m + 2 * n;
+}
+
+double twice(double n) {
+    return 2 * n;
+}
+
+string twice(string n) {
+    return n + n;
+}
+```
+
+C++ will try to match what you call in your code with the functions you have declared, and will complain if it doesn't see anything that match:
+
+```cpp
+twice(5);               // calls int twice(int n)
+twice(2, 5);            // calls int twice(int m, int n)
+twice(5.0);             // calls double twice(double n)
+twice(2, 5.0);          // calls int twice(int m, int n)
+                        // since this is the closest to twice(int m, double n)
+twice("Hello!");        // calls string twice(string n)
+string n = twice(5.0);  // error! nothing is close to string twice(double n)
+```
+
+Note that functions with the same signatures are equal functions. So if you declare two functions with (1) the same name, (2) the same return value, and (3) the same number and type of arguments, your compiler will throw an error, even if your arguments are named differently:
+
+```cpp
+// error!
+double circumference(double r) {
+    return 2 * 3.14 * r;
+}
+
+double circumference(double d) {
+    return 3.14 * d;
+}
+```
+
+# Scope
+
+Soon!
+
+# Namespaces
+
+# Standard library
+
+Soon!
+
+(#) References and further reading
+
+* [C++ for Python programmers](https://www.cs.sonoma.edu/~tiawatts/UsefulStuff/C++ForPythonProgrammers.pdf)
+* [A Transition Guide: Python to C++](https://pdfs.semanticscholar.org/9ad1/030685050e949d1a3d6d92bababcbe075e07.pdf)
+* [Fundamental types - cppreference.com](https://en.cppreference.com/w/cpp/language/types)
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-68097958-3', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github-gist.min.css">

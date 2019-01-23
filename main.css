@@ -1,0 +1,9 @@
+.lh-big {
+    line-height: 2;
+}
+
+@media screen and (min-width: 48em) {
+    .lh-big-ns {
+        line-height: 2;
+    }
+}

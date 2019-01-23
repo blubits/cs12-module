@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css?family=Work+Sans:400,600|Inconsolata:400,700');
+/**
+ * Style classes
+ */
+
+body {
+    background-color: #FDFDFD;
+    color: #333333;
+    font-size: 1rem;
+}
+
+p, strong, em, li, .md a, th, td, blockquote, div {
+    line-height: 1.5;
+    font-family: sans-serif;
+}
+
+div.mediumTOC center {
+    font-family: sans-serif;
+}
+
+blockquote {
+    font-style: italic;
+    color: #333333;
+}
+
+blockquote>p {
+    font-style: normal;
+    color: #444444;
+}
+
+div.admonition {
+    font-family: sans-serif;
+}
+
+.md a:link {
+    color: #3F51B5;
+}
+
+.md a:visited {
+    color: #673AB7;
+}
+
+.md h1, .md div.nonumberh1, .md h2, .md div.nonumberh2, .md div.title {
+    line-height: 1.25;
+    font-family: "Work Sans", serif;
+    font-weight: 600;
+}
+
+.md div.title {
+    margin: 3rem auto;
+    font-size: 2rem;
+}
+
+.md h1, .md div.nonumberh1, .md h2, .md div.nonumberh2 {
+    color: black;
+    padding-bottom: 5px;
+    border-bottom: none;
+    font-weight: 700;
+}
+
+.md h1, .md div.nonumberh1 {
+    font-size: 1.5rem;
+    page-break-before: always;
+}
+
+.md h2, .md div.nonumberh2 {
+    font-size: 1.25rem;
+}
+
+.md h1::before, .md div.nonumberh1::before, .md h2::before, .md div.nonumberh2::before {
+    opacity: 0.5;
+    font-weight: 700;
+}
+
+.md p>code, .md li>code, .md div.endnote>code {
+    font-size: 1rem;
+    background-color: #EEEEEE;
+    border-radius: .125rem;
+    border: 1px solid #DDDDDD;
+    padding: 0 .25rem;
+}
+
+.md pre, .md code {
+    font-size: 1rem;
+}
+
+.md div.endnote pre, .md div.endnote code, .md a>code {
+    font-size: inherit;
+}
+
+.md pre.tilde {
+    border: 1px solid #999999;
+    padding: .5rem 1rem;
+}
+
+.md table.table th {
+    background-color: #333333;
+}
+
+/**
+ * Utility classes
+ */
+
+.comparison, .split {
+    display: flex;
+}
+
+.comparison div, .split div {
+    flex: 1;
+}
+
+.comparison div:first-child, .split div:first-child {
+    padding-right: .5rem;
+}
+
+.comparison div:last-child, .split div:last-child {
+    padding-left: .5rem;
+}
+
+.comparison div pre, .split div pre, .split-vertical div pre {
+    margin-top: .5rem;
+}
+
+.comparison div p, .split div p, .split-vertical p {
+    margin: 0;
+}
+
+.split-vertical div:not(:first-child) {
+    margin-top: 1rem;
+}
+
+.comparison div pre code, .split div pre code, .split-vertical pre code {
+    font-size: .875rem;
+}
+
+.comparison pre.tilde, .split pre.tilde, .split-vertical pre.tilde {
+    margin-top: .5rem;
+}

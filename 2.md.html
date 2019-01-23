@@ -1,0 +1,778 @@
+<meta charset="utf-8">
+
+<!-- TODO convert all visualizations into figures + link to viz -->
+
+**Pointers**
+
+Pointers are one of C and C++'s most notorious features. Programmers - new and experienced alike - shiver at the thought of dealing with them and the many, many possibilities for error that they bring along.
+
+To know why pointers are so scary, let's first dive in to how programming languages use our computer's RAM to store values.
+
+![](https://www.youtube.com/watch?v=5VnDaHBi8dM)
+
+# The Python memory model
+
+Recall that in Python, a variable is synonymous with the value it is associated with. When you assign it to a new variable, the value is simply copied from the old variable to the new variable. When the new variable's value is changed, the old variable is left unchanged.
+
+<div class="split">
+<div>
+**Code** ([Run here.](http://pythontutor.com/visualize.html#code=a%20%3D%205%0Ab%20%3D%20a%0A%0Ab%20%3D%203%0Aprint%28a%29%0Aprint%28b%29&cumulative=false&curInstr=2&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false))
+
+~~~python
+a = 5
+b = a
+
+b = 3
+print(a)
+print(b)
+~~~
+
+<p style="margin-top:.5rem;font-size:.75rem;font-style:italic;">Note: If you want to see an interactive visualization of how the code above runs, click "Run here". Most of the code segments in this section will have it.</p>
+
+</div>
+<div>
+**Output**
+
+```
+5
+3
+```
+
+**Visualization**
+
+*****************
+*  +---+------+
+*  | a |    5 |
+*  +---+------+
+*  + b |    3 |
+*  +---+------+
+*****************
+
+</div>
+</div>
+
+However, for **mutable** objects like lists and dictionaries where contents can be changed, the new variable is actually *linked* to the old variable's value. Here, `a` is simply a **reference** to the list `[1, 2, 3]`. When `b = a` is ran, `b` is then associated to this same list: it is a *reference* to it. When we change the contents of `a`, the contents of `b` also change:
+
+<div class="split">
+<div>
+**Code** ([Run here.](http://pythontutor.com/visualize.html#code=a%20%3D%20%5B1,%202,%203%5D%0Ab%20%3D%20a%0A%0Ab.append%285%29%0Aprint%28a%29%0Aprint%28b%29&cumulative=true&curInstr=2&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false))
+
+~~~python
+a = [1, 2, 3]
+b = a
+
+b.append(5)
+print(a)
+print(b)
+~~~
+
+</div>
+<div>
+**Output**
+
+```
+[1, 2, 3, 5]
+[1, 2, 3, 5]
+```
+
+**Visualization**
+
+***********************************
+*
+*  +---+---+         list
+*  | a | o-+---.      [0] [1] [2]
+*  +---+---+   |     +---+---+---+
+*  + b | o-+---+-->  | 1 | 2 | 3 |
+*  +---+---+         +---+---+---+
+***********************************
+
+</div>
+</div>
+
+Pointers in C++ work generally the same way. However, C++ stores variables in a different way than Python.
+
+# The C++ memory model
+
+In C++, all variables live in memory. We can actually see where each variable lives by calling the address-of operator `&`:
+
+<div class="comparison">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a = 5;
+    cout << "a is " << a << endl;
+    cout << "a lives at " << &a << endl;
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+a is 5
+a lives at 0xfff000bcc
+```
+</div>
+</div>
+
+If we think of memory as a big list of bytes, the address of a variable is simply its index in memory. So here, we know that `a` lives in the address `0xfff000bcc`.
+
+*****************************************
+*
+*  0xfff000b__:
+*
+*   ca   cb   cc   cd    ce   cf   cg
+*  +----+----+----+----+----+----+----+
+*  |    |    |    |    |    |    |    |
+*  +----+----+----+----+----+----+----+
+*             ^
+*             |
+*             '--o int a;
+*****************************************
+
+But our `int` variable doesn't fit in just one byte! Each data type requires a certain number of bytes. For example, `int`s require 4 bytes, or 32 bits, of memory. (This is why an `unsigned int` can express numbers up to 2^32 - 1.) So while `a`'s address is at `cc`, it actually occupies the space from `cc` to `cf`.
+
+********************************************
+*
+*  0xfff000b__:
+*
+*             .--o a starts here, but...
+*             |
+*             v
+*   ca   cb   cc   cd    ce   cf   cg
+*  +----+----+----+----+----+----+----+
+*  |    |    |  0 |  0 |  0 |  5 |    |
+*  +----+----+----+----+----+----+----+
+*
+*             \_________________/
+*               a occupies this space
+********************************************
+
+Therefore, the address of a variable, coupled with its data type's size, uniquely determines the space a variable takes up. To check what size each data type uses, use the `sizeof` operator:
+
+<div class="comparison">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "char uses ";
+    cout << sizeof(char) << " byte" << endl;
+
+    cout << "int uses ";
+    cout << sizeof(int) << " bytes" << endl;
+
+    cout << "long long int uses ";
+    cout << sizeof(long long int) << " bytes" << endl;
+
+    cout << "float uses ";
+    cout << sizeof(float) << " bytes" << endl;
+
+    cout << "double uses ";
+    cout << sizeof(double) << " bytes" << endl;
+
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+char uses 1 byte
+int uses 4 bytes
+long long int uses 8 bytes
+float uses 4 bytes
+double uses 8 bytes
+```
+</div>
+</div>
+
+# Pointers
+
+We're now all set to use pointers. Simply put, a **pointer** is just an address in memory; it "points" to something in memory:
+
+<div class="split">
+<div>
+**Code** ([Run here.](http://pythontutor.com/visualize.html#code=%23include%20%3Ciostream%3E%0Ausing%20namespace%20std%3B%0A%0Aint%20main%28%29%20%7B%0A%20%20int%20a%20%3D%205%3B%0A%20%20cout%20%3C%3C%20%22a%20is%20%22%20%3C%3C%20a%20%3C%3C%20endl%3B%0A%20%20cout%20%3C%3C%20%22a%20lives%20at%20%22%20%3C%3C%20%26a%20%3C%3C%20endl%3B%0A%20%20%0A%20%20int%20*p%20%3D%20%26a%3B%0A%20%20cout%20%3C%3C%20%22p%20is%20%22%20%3C%3C%20p%20%3C%3C%20endl%3B%0A%20%20cout%20%3C%3C%20*p%20%3C%3C%20%22%20lives%20at%20p%22%20%3C%3C%20endl%3B%0A%20%20cout%20%3C%3C%20%22p%20lives%20at%20%22%20%3C%3C%20%26p%20%3C%3C%20endl%3B%20%0A%20%20%0A%20%20return%200%3B%0A%7D&cumulative=false&curInstr=9&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=cpp&rawInputLstJSON=%5B%5D&textReferences=false))
+
+~~~cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a = 5;
+    cout << "a is " << a << endl;
+    cout << "a lives at " << &a << endl;
+
+    int *p = &a;
+    cout << "p is " << p << endl;
+    cout << *p << " lives at p" << endl;
+    cout << "p lives at " << &p << endl;
+
+    return 0;
+}
+~~~
+
+</div>
+<div>
+**Output**
+
+```
+a is 5
+a lives at 0xfff000bc4
+p is 0xfff000bc4
+5 lives at p
+p lives at 0xfff000bc8
+```
+
+**Visualization**
+
+***********************************
+*    .--------------.
+*    |              |
+*    v              |
+*  +--------+---+   |
+*  |  int a | 5 +   |
+*  +--------+---+   |
+*  + int *p | *-+---'
+*  +--------+---+
+***********************************
+
+</div>
+</div>
+
+You can see that, in the visualization, the pointer `p` literally points to `a`. In memory, that looks something like this:
+
+*************************************************************
+*
+*  0xfff000b__:
+*
+*        .-------------------.
+*        |                   |
+*        |                   o int *p;
+*        v int a;
+*   c3   c4   c5   c6   c7   c8...
+*  +----+----+----+----+----+---------------+
+*  |    |  0 |  0 |  0 |  5 |   0xfff000bc4 |
+*  +----+----+----+----+----+---------------+
+*                            \_____________/
+*
+*                             p occupies this space
+*************************************************************
+
+Note that, like the variable itself, the pointer also lives in memory; we can also check where this pointer is located by using the `&` operator, as above.
+
+To initialize a pointer, we simply append a `*` before the variable, like this:
+
+```cpp
+int *p;
+```
+
+`p` here is a pointer to an `int`. All data types can have pointers.
+
+To make a pointer point to an existing variable, we use the `&` operator earlier:
+
+```cpp
+p = &a;
+```
+
+Now `p` is set to the location of a: that is, `p` now points to `a`. This is because `&a` is not just the address of a; it is actually a *pointer* to a.
+
+To access the variable that `a` points to, we use the dereference operator `*`. With this, we can actually change the value of `a` through `p`!
+
+<div class="split">
+<div>
+**Code** ([Run here.](http://pythontutor.com/visualize.html#code=%23include%20%3Ciostream%3E%0Ausing%20namespace%20std%3B%0A%0Aint%20main%28%29%20%7B%0A%20%20int%20a%20%3D%205%3B%20%0A%20%20int%20*p%20%3D%20%26a%3B%0A%20%20%0A%20%20cout%20%3C%3C%20%22a%20was%20%22%20%3C%3C%20a%20%3C%3C%20endl%3B%0A%20%20*p%20%3D%204%3B%0A%20%20cout%20%3C%3C%20%22a%20is%20now%20%22%20%3C%3C%20a%20%3C%3C%20endl%3B%0A%20%20%0A%20%20return%200%3B%0A%7D&cumulative=false&curInstr=4&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=cpp&rawInputLstJSON=%5B%5D&textReferences=false))
+
+~~~cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a = 5;
+    int *p = &a;
+
+    cout << "a was " << a << endl;
+    *p = 4;
+    cout << "a is now " << a << endl;
+
+    return 0;
+}
+~~~
+
+</div>
+<div>
+**Output**
+
+```
+a was 5
+a is now 4
+```
+
+**Visualization**
+
+***********************************
+*    .--------------.
+*    |              |
+*    v              |
+*  +--------+---+   |
+*  |  int a | 4 +   |
+*  +--------+---+   |
+*  + int *p | *-+---'
+*  +--------+---+
+***********************************
+
+</div>
+</div>
+
+Before we move on, note a few things about pointers:
+* The pointer is *not* the same as the variable it points to! You can freely change where the pointer moves to, and the variable it originally pointed to will still be there:
+
+    ```
+    int a = 5, b = 4;
+    int *p = &a;        // p points to a
+    p = &b;             // now p points to b
+    *p -= 1;            // b is now 3, but a is still 5!
+    ```
+
+* Don't forget to make your pointers point somewhere! A common error in C++ is declaring a pointer variable without making it point to anything:
+
+    <div class="comparison">
+    <div>
+    **Code**
+
+    ```cpp
+    #include <iostream>
+    using namespace std;
+
+    int main() {
+        int a = 5;
+        int *p;
+
+        *p += 5;
+        cout << *p << endl;
+
+        return 0;
+    }
+    ```
+    </div>
+    <div>
+    **Output**
+
+    ```
+    Segmentation fault
+    ```
+    </div>
+    </div>
+
+    Welcome to your first **segmentation fault**! A segmentation fault happens when you access a part of memory that you should not have accessed. In this case, `p` doesn't actually point to anything specific yet. It could point to anything, possibly nothing (the `nullptr`), or even parts of other program's memory! When you access it, your operating system will catch you doing something you shouldn't, and your program will fail with a `Segmentation fault`.
+
+* On that note, you cam make your pointers point to literally nothing by setting it to `nullptr` (or `NULL`).
+
+    ```cpp
+    int *p = nullptr;
+    ```
+
+    This will always throw a `Segmentation fault` when accessing it. It's also good practice to check whether the pointers you deal with point to nothing so your programs won't fail.
+
+    ```cpp
+    if (p == nullptr) {
+        cout << "There's nothing there!" << endl;
+    } else {
+        *p += 5;
+    }
+    ```
+
+* You can declare multiple pointers at a time in one line;
+
+    ```cpp
+    int *a, *b;
+    ```
+
+    Be careful, though. You might type something like this by accident:
+
+    ```cpp
+    int* a, b;
+    ```
+
+    It might look like `a` and `b` are both pointers, but in reality, only `a` is the pointer here, since `b` doesn't have an asterisk before it. It's easier to put the `*` directly before the variable name so it's easy to see which variables are pointers and which are not:
+
+    ```cpp
+    int *a, *b, radius;
+    ```
+
+* You can chain pointers! You can make pointers that point to pointers, pointers that point to these kinds of pointers, and so on:
+
+    <div class="split-vertical">
+    <div>
+    **Code** ([Run here.](http://pythontutor.com/visualize.html#code=%23include%20%3Ciostream%3E%0Ausing%20namespace%20std%3B%0A%0Aint%20main%28%29%20%7B%0A%20%20int%20a%20%3D%205%3B%20%0A%20%20int%20*p%20%3D%20%26a%3B%0A%20%20int%20**pp%20%3D%20%26p%3B%0A%20%20int%20***ppp%20%3D%20%26pp%3B%0A%20%20%0A%20%20return%200%3B%0A%7D&cumulative=false&curInstr=3&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=cpp&rawInputLstJSON=%5B%5D&textReferences=false))
+
+    ~~~cpp
+    #include <iostream>
+    using namespace std;
+
+    int main() {
+        int a = 5;
+        int *p = &a;
+        int **pp = &p;
+        int ***ppp = &pp;
+    }
+    ~~~
+
+    </div>
+    <div>
+
+    **Visualization**
+
+    ***************************************
+    *
+    *  +------------+---+
+    *  |      int a | 4 | <---.
+    *  +------------+---+     |
+    *  |     int *p | *-+-----' <--.
+    *  +------------+---+          |
+    *  |   int ∗∗pp | *-+----------' <--.
+    *  +------------+---+               |
+    *  | int ∗∗∗ppp | *-+---------------'
+    *  +------------+---+
+    *
+    ***************************************
+
+    </div>
+    </div>
+
+    You can also chain dereferencing operators, so `***ppp == a (== 3)`.
+
+    You'll probably just need pointers to pointers (`int **p`) at most, though. Don't make your code more confusing by stacking pointers needlessly.
+
+
+# References
+
+A less-scary version of pointers are **references**:
+
+*If you can't see the visualization, click [here](http://pythontutor.com/iframe-embed.html#code=%23include%20%3Ciostream%3E%0Ausing%20namespace%20std%3B%0A%0Aint%20main%28%29%20%7B%0A%20%20int%20a%20%3D%205%3B%0A%20%20int%20%26r%20%3D%20a%3B%0A%20%20%0A%20%20cout%20%3C%3C%20%22a%20is%20%22%20%3C%3C%20a%20%3C%3C%20endl%3B%0A%20%20cout%20%3C%3C%20%22r%20is%20%22%20%3C%3C%20r%20%3C%3C%20endl%3B%0A%20%20%0A%20%20r%20%3D%206%3B%0A%20%20%0A%20%20cout%20%3C%3C%20%22a%20is%20now%20%22%20%3C%3C%20a%20%3C%3C%20endl%3B%0A%20%20cout%20%3C%3C%20%22r%20is%20now%20%22%20%3C%3C%20r%20%3C%3C%20endl%3B%0A%20%20%0A%20%20return%200%3B%0A%7D&codeDivHeight=400&codeDivWidth=350&curInstr=5&origin=opt-frontend.js&py=cpp&rawInputLstJSON=%5B%5D).*
+
+<div class="split">
+<div>
+**Code** ([Run here.](http://pythontutor.com/visualize.html##code=%23include%20%3Ciostream%3E%0Ausing%20namespace%20std%3B%0A%0Aint%20main%28%29%20%7B%0A%20%20int%20a%20%3D%205%3B%0A%20%20int%20%26r%20%3D%20a%3B%0A%20%20%0A%20%20cout%20%3C%3C%20%22a%20is%20%22%20%3C%3C%20a%20%3C%3C%20endl%3B%0A%20%20cout%20%3C%3C%20%22r%20is%20%22%20%3C%3C%20r%20%3C%3C%20endl%3B%0A%20%20%0A%20%20r%20%3D%206%3B%0A%20%20%0A%20%20cout%20%3C%3C%20%22a%20is%20now%20%22%20%3C%3C%20a%20%3C%3C%20endl%3B%0A%20%20cout%20%3C%3C%20%22r%20is%20now%20%22%20%3C%3C%20r%20%3C%3C%20endl%3B%0A%20%20%0A%20%20return%200%3B%0A%7D&codeDivHeight=400&codeDivWidth=350&curInstr=5&origin=opt-frontend.js&py=cpp&rawInputLstJSON=%5B%5D&textReferences=false))
+
+~~~cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a = 5;
+    int &r = a;
+
+    cout << "a is " << a << endl;
+    cout << "r is " << r << endl;
+
+    r = 6;
+
+    cout << "a is now " << a << endl;
+    cout << "r is now " << r << endl;
+
+    return 0;
+}
+~~~
+
+</div>
+<div>
+**Output**
+
+```
+a is 5
+r is 5
+a is now 6
+r is now 6
+```
+
+**Visualization**
+
+***********************************
+*    .--------------.
+*    |              |
+*    v              |
+*  +--------+---+   |
+*  |  int a | 4 +   |
+*  +--------+---+   |
+*  + int &r | o-+---'
+*  +--------+---+
+***********************************
+
+</div>
+</div>
+
+References work a bit like pointers, except for the following gotchas:
+
+* References **have** to be bound to a certain variable; they can never be set to nothing like pointers and `nullptr`.
+
+* References are **fixed**; they can't be decoupled from the variable it belongs to, unlike pointers which can freely point to anything.
+
+In effect, references are just aliases for variables; we don't have to reference `&` and dereference `*` them constantly like pointers. We can just use them like we use any other variable. When one variable changes, so do the others. In memory, that looks something like this:
+
+*************************************************************
+*
+*  0xfff000b__:
+*
+*         .--o int &r;
+*         |
+*         v
+*        int a;
+*   c3   c4   c5   c6   c7   c8   c9   ca   cb   cc    cd
+*  +----+----+----+----+----+----+----+----+----+----+----+
+*  |    |  0 |  0 |  0 |  5 |    |    |    |    |    |    |
+*  +----+----+----+----+----+----+----+----+----+----+----+
+*
+*
+*************************************************************
+
+This means that references don't actually live in memory like pointers, for all intents and purposes. This makes them safer to use, but it's not as flexible as pointers, which is why we seldom use them in code. References are very useful in one specific case, though, which we will discuss soon.
+
+# Pass-by-reference
+
+Recall that in Python, variables passed to functions generally don't change...
+
+<div class="split">
+<div>
+**Code** ([Run here.](http://pythontutor.com/visualize.html#code=def%20swap%28a,%20b%29%3A%0A%20%20%20%20temp%20%3D%20a%0A%20%20%20%20a%20%3D%20b%0A%20%20%20%20b%20%3D%20temp%0A%20%20%20%20%0Ax%20%3D%205%0Ay%20%3D%207%0Aswap%28x,%20y%29%0Aprint%28x,%20y%29&cumulative=false&curInstr=9&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false))
+
+~~~python
+def swap(a, b):
+    temp = a
+    a = b
+    b = temp
+
+x = 5
+y = 7
+swap(x, y)
+print(x, y)
+~~~
+
+</div>
+<div>
+**Output**
+
+```
+5 7
+```
+
+**Visualization**
+
+***********************************
+*  +------+---+       function
+*  | swap | o-+-----> swap(a, b)
+*  +------+---+
+*  |    x | 5 |
+*  +------+---+
+*  +    y | 7 |
+*  +------+---+
+***********************************
+
+</div>
+</div>
+
+...except, again, when they are mutable, like lists:
+
+<div class="split">
+<div>
+**Code** ([Run here.](http://pythontutor.com/visualize.html#code=def%20add%28l,%20k%29%3A%0A%20%20%20%20l.append%28k%29%0A%20%20%20%20%0Anumbers%20%3D%20%5B1,%202,%203%5D%0Aadd%28numbers,%205%29%0Aprint%28numbers%29&codeDivHeight=400&codeDivWidth=350&cumulative=false&curInstr=7&heapPrimitives=nevernest&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false))
+
+~~~python
+def add(l, k):
+    l.append(k)
+
+numbers = [1, 2, 3]
+add(numbers, 5)
+print(numbers)
+~~~
+
+</div>
+<div>
+**Output**
+
+```
+[1, 2, 3, 5]
+```
+
+**Visualization**
+
+***************************************************
+*
+*  +---------+---+       function
+*  |     add | o-+-----> add(l, k)
+*  +---------+---+
+*  | numbers | o-+----.      list
+*  +---------+---+    |       [0] [1] [2] [3]
+*                     |      +---+---+---+---+
+*                     '----> | 1 | 2 | 3 | 5 |
+*                            +---+---+---+---+
+*
+***************************************************
+
+</div>
+</div>
+
+
+C++ works the same way: function arguments are passed by *value*. But we can actually make our functions manipulate the variables themselves! We just change our arguments from variables to *pointers* to those variables:
+
+<div class="split">
+<div>
+**Code** ([Run here.](http://pythontutor.com/visualize.html#code=%23include%20%3Ciostream%3E%0Ausing%20namespace%20std%3B%0A%0Avoid%20swap%28int%20*a,%20int%20*b%29%20%7B%0A%20%20%20%20int%20temp%20%3D%20*a%3B%0A%20%20%20%20*a%20%3D%20*b%3B%0A%20%20%20%20*b%20%3D%20temp%3B%0A%7D%0A%0Aint%20main%28%29%20%7B%0A%20%20%20%20int%20x%20%3D%205,%20y%20%3D%207%3B%0A%20%20%20%20swap%28%26x,%20%26y%29%3B%0A%20%20%20%20cout%20%3C%3C%20x%20%3C%3C%20%22%20%22%20%3C%3C%20y%20%3C%3C%20endl%3B%0A%20%20%20%20return%200%3B%0A%7D&cumulative=false&curInstr=7&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=cpp&rawInputLstJSON=%5B%5D&textReferences=false))
+
+~~~cpp
+#include <iostream>
+using namespace std;
+
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+int main() {
+    int x = 5, y = 7;
+    swap(&x, &y);
+    cout << x << " " << y << endl;
+    return 0;
+}
+~~~
+
+</div>
+<div>
+**Output**
+
+```
+7 5
+```
+
+**Visualization**
+
+***************************************************
+*
+*  main:
+*  +-------+---+
+*  | int x | 7 | <-----.
+*  +-------+---+       |
+*  | int y | 5 | <-----+----.
+*  +-------+---+       |    |
+*                      |    |
+*  swap(int*, int∗):   |    |
+*  +--------+---+      |    |
+*  | int *a | *-+------'    |
+*  +--------+---+           |
+*  | int *b | *-+-----------'
+*  +--------+---+
+*
+*
+***************************************************
+
+</div>
+</div>
+
+As you can see, there's a lot of syntax you need to add in order for this to work. In the function itself, you have to constantly deference the arguments to manipulate them directly; when you call the function, you need to explicitly pass pointers to variables through `&`, not the variables themselves.
+
+To avoid this, we can use references instead of pointers:
+
+<div class="split">
+<div>
+**Code** ([Run here.](http://pythontutor.com/visualize.html#code=%23include%20%3Ciostream%3E%0Ausing%20namespace%20std%3B%0A%0Avoid%20swap%28int%20%26a,%20int%20%26b%29%20%7B%0A%20%20%20%20int%20temp%20%3D%20a%3B%0A%20%20%20%20a%20%3D%20b%3B%0A%20%20%20%20b%20%3D%20temp%3B%0A%7D%0A%0Aint%20main%28%29%20%7B%0A%20%20%20%20int%20x%20%3D%205,%20y%20%3D%207%3B%0A%20%20%20%20swap%28x,%20y%29%3B%0A%20%20%20%20cout%20%3C%3C%20x%20%3C%3C%20%22%20%22%20%3C%3C%20y%20%3C%3C%20endl%3B%0A%20%20%20%20return%200%3B%0A%7D%0A&codeDivHeight=400&codeDivWidth=350&curInstr=4&origin=opt-frontend.js&py=cpp&rawInputLstJSON=%5B%5D))
+
+~~~cpp
+#include <iostream>
+using namespace std;
+
+void swap(int &a, int &b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+int main() {
+    int x = 5, y = 7;
+    swap(x, y);
+    cout << x << " " << y << endl;
+    return 0;
+}
+~~~
+
+</div>
+<div>
+**Output**
+
+```
+7 5
+```
+
+**Visualization**
+
+***************************************************
+*
+*  main:
+*  +-------+---+
+*  | int x | 7 | <-----.
+*  +-------+---+       |
+*  | int y | 5 | <-----+----.
+*  +-------+---+       |    |
+*                      |    |
+*  swap(int&, int&):   |    |
+*  +--------+---+      |    |
+*  | int &a | o-+------'    |
+*  +--------+---+           |
+*  | int &b | o-+-----------'
+*  +--------+---+
+*
+*
+***************************************************
+
+</div>
+</div>
+
+Since references work practically like pointers, the `swap()` function still works. And since references are aliases to the variables themselves, we don't have to deal with dereferencing or using the address-of operator.
+
+Unless you explicitly need to deal with pointers as arguments, if you want to simply access and change variables like above, using pass-by-reference is highly recommended. It's less error-prone and results in clearer code.
+
+# Return-by-reference
+
+As functions can accept pointers as arguments, it should make sense that functions can return pointers, too:
+
+```
+int* func() {
+    int y = 10;
+    return &y;
+}
+```
+
+(#) References and further reading
+
+* [Everything you need to know about pointers in C](https://boredzo.org/pointers/)
+    - This will help you in C++ too, don't worry!
+* [References in C++ - GeeksforGeeks](https://www.geeksforgeeks.org/references-in-c/)
+
+<script>
+window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
+ga('create', 'UA-68097958-3', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+<script>
+window.markdeepOptions = {
+    tocStyle: 'medium'
+}
+</script>
+
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github-gist.min.css">

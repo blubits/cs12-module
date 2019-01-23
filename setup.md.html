@@ -1,0 +1,115 @@
+<meta charset="utf-8">
+
+**Setting up C++**
+
+Before anything else, let's try to setup C++ on your computer. The course handlers of CS12 will provide a virtual machine, but in case you're more comfortable with your computer, here's a fool-proof way to set up C++. We'll be using g++, a common open-source compiler for C++ code.
+
+# Linux users
+
+If you're cool 😎 enough to use Linux, you probably already know how your package manager works. Open up the terminal, and install g++:
+
+Ubuntu/Debian:
+```bash
+$ sudo apt install g++
+```
+
+Fedora:
+```bash
+$ sudo yum install gcc-g++
+```
+
+Arch:
+```bash
+$ sudo pacman -S gcc
+```
+
+For other distros, just look up how to install g++ on Google. You may also opt to install the "development" package for your distro, like `base-devel` on Arch or `build-essential` on Ubuntu/Debian.
+
+# Mac users
+
+To install g++, install Xcode from the [Mac App Store](https://itunes.apple.com/ph/app/xcode/id497799835?mt=12). To test this out, simply run g++ on your Terminal. You should see this:
+
+```bash
+$ g++
+clang: error: no input files
+```
+
+Technically, this isn't g++. This is clang, another common C++ compiler. However, this should work 99% similar to g++ (it only fails in very, very rare cases).
+
+# Windows users
+
+Good luck installing g++! No, really - development tools are a bitch to install under Windows. You have three options here:
+
+* Dual-boot or make a VM for Linux
+
+* The **Windows Subsystem for Linux** (WSL) for Windows 10 Anniversary Update and later
+
+* **MSYS2** for earlier versions of Windows 10 and Windows 8.1 and below
+
+If you're willing to put the time and effort in, just install Linux. Future you will thank you for it. Otherwise, feel free to take the plunge and install the other two options.
+
+For **WSL**, follow [these instructions](https://docs.microsoft.com/en-us/windows/wsl/install-win10) from Microsoft. After everything is set up, you'll be greeted by a terminal powered by Ubuntu everytime you start it up. This will be your new "terminal" (don't use Command Prompt anymore if you want to code in C++). You can then just run
+
+```bash
+$ sudo apt install g++
+```
+
+to install and use g++.
+
+For **MSYS2**, go to their [homepage](https://www.msys2.org/) and download the executable (you'll most likely want `msys2-x86_64-<DATE>.exe`). Follow the instructions in the homepage, and when everything's set up, run
+
+```bash
+$ pacman -S gcc
+```
+
+to install g++.
+
+# Testing
+
+Once everything works, it's time to test G++! Open your favorite text editor and type this out:
+
+~~~cpp
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    cout << "Hello, CS12!" << endl;
+    return 0;
+}
+~~~
+
+Save it as `hello.cpp`. (Source code files in C++ have an extension of `.cpp` or `.cc`, usually the former.) Then open your terminal, `cd` to the location of your file[^fn1] and run the following:
+
+```bash
+$ g++ hello.cpp -o hello
+```
+
+This tells g++ to compile `hello.cpp` and `-o`utput the compiled code into the file `hello`. To run, type
+
+```bash
+$ ./hello
+Hello, CS12!
+```
+
+And that's it, your first CS12 program! Feel free to practice this routine, since you'll be using it for the rest of CS12 (and later courses, too).
+
+[^fn1]: Recall how to `cd` to directories in your terminal! All environments discussed in this page will run Bash, so you can use Unix commands. Also, for Windows users using WSL or MSYS2, your Windows folders are located in a different location than you might expect. A file in `C:\Users\jdoe\Documents\test.cpp` will be in `/mnt/c/Users/jdoe/Documents/test.cpp` in **WSL** and `/c/Users/jdoe/Documents/test.cpp` in **MSYS2**.
+
+# IDEs?
+
+Short answer: **No.**
+
+Long answer: IDEs are actually generally helpful, especially for big projects that are hard to maneuver. You're probably better off just compiling things in the terminal right now, however. CS12 programs are usually simple anyway, and there's a lack of flexibility with running code in IDEs that you'll want to have for CS12 (like redirecting input from a file `$ ./test < test.in` or redirecting output to a file `$ ./test > test.out`.)
+
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-68097958-3', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github-gist.min.css">

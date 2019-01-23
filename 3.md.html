@@ -1,0 +1,203 @@
+<meta charset="utf-8">
+
+**Arrays**
+
+The array is the fundamental structure of C++. It's the easiest way to store multiple values of the same type in one location. We'll be taking a look at how to use it and a bit of the implementation details behind it.
+
+# Declaring arrays
+
+An **array** is simply a collection of elements of the same type. What makes an array special is that these elements are stored sequentially, next to each other in memory.
+
+Declaring an array is as simple as doing this:
+
+```cpp
+int arr[5];
+```
+
+It's very similar to declaring a regular variable, but we declare the size of the array in square brackets `[]`. The array above is an array of 5 integers. In memory, that looks something like this:
+
+*****************************************************
+*
+*  (a location in memory):
+*
+*   54...57 58...5b 5b...5e 5f...63 64...67 68...6b
+*  +-------+-------+-------+-------+-------+-------+
+*  |    ?? |    ?? |    ?? |    ?? |    ?? |    ?? |
+*  +-------+-------+-------+-------+-------+-------+
+*  ^  [0]     [1]     [2]     [3]     [4]
+*  |
+*  |
+*  '---o int arr[5];
+*
+*****************************************************
+
+Like initializing regular variables, arrays have garbage values in them by default. To access and change their contents, we use the indexing operator `[]`:
+
+```cpp
+arr[0] = 5;
+cout << arr[0] << endl;
+```
+
+Like lists in Python, arrays start at zero. But unlike in Python, accessing something that's beyond the limits of the array won't throw an error:
+
+```cpp
+arr[5] = 12;    // okay?
+```
+
+**Don't do this!** Like using uninitialized pointers, accessing indexes beyond the limits of a certain array will cause you to access parts of memory you shouldn't. At best, you'll retrieve or overwrite memory a bit past the array; at worst, you'll accidentally overwrite parts of memory you don't have access to and your program will throw a `Segmentation fault`.
+
+Alternatively, you can also initialize arrays as soon as you declare them by using braces `{}`. This is called list initialization:
+
+```cpp
+int arr[5] = {1, 2, 3, 4, 5};
+```
+
+*****************************************************
+*
+*
+*  +-------+-------+-------+-------+-------+
+*  |     1 |     2 |     3 |     4 |     5 | ...
+*  +-------+-------+-------+-------+-------+
+*  ^  [0]     [1]     [2]     [3]     [4]
+*  |
+*  |
+*  '---o int arr[5];
+*
+*****************************************************
+
+You can also specify less items. The rest of the array will be filled with zeroes:
+
+```cpp
+int arr[5] = {1, 2, 3};
+```
+
+*****************************************************
+*
+*
+*  +-------+-------+-------+-------+-------+
+*  |     1 |     2 |     3 |     0 |     0 | ...
+*  +-------+-------+-------+-------+-------+
+*  ^  [0]     [1]     [2]     [3]     [4]
+*  |
+*  |
+*  '---o int arr[5];
+*
+*****************************************************
+
+You can even leave out everything inside the braces `{}`! This will initialize every element of the array to zero.
+
+```cpp
+int arr[5] = {};
+```
+
+*****************************************************
+*
+*
+*  +-------+-------+-------+-------+-------+
+*  |     0 |     0 |     0 |     0 |     0 | ...
+*  +-------+-------+-------+-------+-------+
+*  ^  [0]     [1]     [2]     [3]     [4]
+*  |
+*  |
+*  '---o int arr[5];
+*
+*****************************************************
+
+If you do use list initialization, feel free to leave out the size of your array inside the brackets `[]`. Your compiler will infer the size of the array from the number of elements you specify inside the braces.
+
+```cpp
+int arr[] = {1, 2, 3};
+```
+
+*****************************************************
+*
+*
+*  +-------+-------+-------+
+*  |     1 |     2 |     3 | ...
+*  +-------+-------+-------+
+*  ^  [0]     [1]     [2]
+*  |
+*  |
+*  '---o int arr[3]; (inferred)
+*
+*****************************************************
+
+## Using arrays
+
+In Python, we used the for loop to iterate through lists:
+
+```python
+for item in list:
+    print(item)
+
+for i in range(len(list)):
+    print(list[i])
+```
+
+Similarly, C++'s `for` loop comes in handy when accessing arrays.
+
+```cpp
+int arr[5] = {1, 2, 3, 4, 5};
+for (int i = 0; i < 5; i++) {
+    cout << arr[i] << endl;
+}
+```
+
+**Be careful!** There is no easy way to check the size of an array, unlike Python and `len()`. It is very, very easy to accidentally access items outside your array. For example, this piece of code gets the sum of the elements in an array:
+
+<div class="split">
+
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int arr[5] = {1, 2, 3, 4, 5};
+    int sum = 0;
+    for (int i = 0; i <= 5; i++) {
+        sum += arr[i];
+    }
+    cout << sum << endl;
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+14685632
+```
+
+</div>
+
+You'd expect it to output 15, but instead it's printing a very big, garbage value. That's because you accidentally accessed an element outside the array: you looped from indexes 0 to 5, *including* 5, and arr[5] is outside the array. This is another frequent source of `Segmentation fault`s or garbage values, so watch out for things like this in your code.
+
+## Multidimensional arrays
+
+
+
+# Arrays are pointers
+
+
+
+<script>
+window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
+ga('create', 'UA-68097958-3', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+<script>
+window.markdeepOptions = {
+    tocStyle: 'medium'
+}
+</script>
+
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github-gist.min.css">
