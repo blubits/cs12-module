@@ -2,11 +2,37 @@
 
 **Algorithm analysis**
 
-# Sorting
+Now that we have the basic constructs to implement a lot of the algorithms we discussed in CS10 and CS11, now is as good a time as any to introduce one of the most important concepts in theoretical computer science: the **analysis of algorithms**.
+
+# Motivation
+
+But why and how do we analyze algorithms? We've discussed - and are going to discuss - a lot of algorithms in CS, and some of them are bound to solve the same problem. What differentiates each algorithm is its speed and memory efficiency: how fast it runs and how much space does it consume. This comparison does not only happen between raw measurements: it is a systematic process, involving how speed and efficiency actually change *over time*.
+
+For a computer scientist, cutting running time in half, or even a quarter, is meaningless, especially since computers are getting better and better at solving things. What matters is the **order** at which your running time belongs to. To see what this means, let's take a look at the speed at which some functions run below.
 
 # Computational complexity
 
+To be able to more accurately compare different algorithms, we must have a model that allows us to track their running times in the same manner. For now, let's use the **RAM model of computation**. Instead of counting in seconds, we count the number of time (or resource) units (let's call them 'steps') consumed by an algorithm. Each basic operation - addition `+`, multiplication `-`, function calls, etc. - takes one step. Each time we access memory - through array indexing `[]` or pointer dereferencing `*`, for example - we also take one step.
+
+With this, we can measure the **time complexity** of an algorithm by counting the number of steps it takes to execute. Let's take a look at a couple of functions and try to measure their time complexities.
+
+```cpp
+int sum(int x, int y) {
+    int a = x + y;
+    cout << a << endl;
+    return a;
+}
+```
+
+Using the RAM computation model, let's try to
+
+*Soon!*
+
 # Big O notation
+
+<!-- NOTE: Time complexity of program is dependent on the most complex part of the program. >
+
+*Soon!*
 
 <script>
 window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;

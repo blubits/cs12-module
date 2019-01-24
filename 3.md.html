@@ -14,20 +14,31 @@ Declaring an array is as simple as doing this:
 int arr[5];
 ```
 
+*****************************************************
+*
+*  int arr[5]:
+*
+*  +---+---+---+---+---+
+*  |   |   |   |   |   |
+*  +---+---+---+---+---+
+*   [0] [1] [2] [3] [4]
+*
+*****************************************************
+
 It's very similar to declaring a regular variable, but we declare the size of the array in square brackets `[]`. The array above is an array of 5 integers. In memory, that looks something like this:
 
 *****************************************************
 *
 *  (a location in memory):
 *
+*                  int arr[5]
+*     ___________________________________
+*    /                                   \
 *   54...57 58...5b 5b...5e 5f...63 64...67 68...6b
-*  +-------+-------+-------+-------+-------+-------+
-*  |    ?? |    ?? |    ?? |    ?? |    ?? |    ?? |
-*  +-------+-------+-------+-------+-------+-------+
-*  ^  [0]     [1]     [2]     [3]     [4]
-*  |
-*  |
-*  '---o int arr[5];
+*  +-------+-------+-------+-------+-------+
+*  |    ?? |    ?? |    ?? |    ?? |    ?? | ...
+*  +-------+-------+-------+-------+-------+
+*     [0]     [1]     [2]     [3]     [4]
 *
 *****************************************************
 
@@ -54,14 +65,12 @@ int arr[5] = {1, 2, 3, 4, 5};
 
 *****************************************************
 *
+*  int arr[5]:
 *
-*  +-------+-------+-------+-------+-------+
-*  |     1 |     2 |     3 |     4 |     5 | ...
-*  +-------+-------+-------+-------+-------+
-*  ^  [0]     [1]     [2]     [3]     [4]
-*  |
-*  |
-*  '---o int arr[5];
+*  +---+---+---+---+---+
+*  | 1 | 2 | 3 | 4 | 5 |
+*  +---+---+---+---+---+
+*   [0] [1] [2] [3] [4]
 *
 *****************************************************
 
@@ -73,14 +82,12 @@ int arr[5] = {1, 2, 3};
 
 *****************************************************
 *
+*  int arr[5]:
 *
-*  +-------+-------+-------+-------+-------+
-*  |     1 |     2 |     3 |     0 |     0 | ...
-*  +-------+-------+-------+-------+-------+
-*  ^  [0]     [1]     [2]     [3]     [4]
-*  |
-*  |
-*  '---o int arr[5];
+*  +---+---+---+---+---+
+*  | 1 | 2 | 3 | 0 | 0 |
+*  +---+---+---+---+---+
+*   [0] [1] [2] [3] [4]
 *
 *****************************************************
 
@@ -92,14 +99,12 @@ int arr[5] = {};
 
 *****************************************************
 *
+*  int arr[5]:
 *
-*  +-------+-------+-------+-------+-------+
-*  |     0 |     0 |     0 |     0 |     0 | ...
-*  +-------+-------+-------+-------+-------+
-*  ^  [0]     [1]     [2]     [3]     [4]
-*  |
-*  |
-*  '---o int arr[5];
+*  +---+---+---+---+---+
+*  | 0 | 0 | 0 | 0 | 0 |
+*  +---+---+---+---+---+
+*   [0] [1] [2] [3] [4]
 *
 *****************************************************
 
@@ -111,27 +116,25 @@ int arr[] = {1, 2, 3};
 
 *****************************************************
 *
+*  int arr[3] (inferred):
 *
-*  +-------+-------+-------+
-*  |     1 |     2 |     3 | ...
-*  +-------+-------+-------+
-*  ^  [0]     [1]     [2]
-*  |
-*  |
-*  '---o int arr[3]; (inferred)
+*  +---+---+---+
+*  | 1 | 2 | 3 |
+*  +---+---+---+
+*   [0] [1] [2]
 *
 *****************************************************
 
 ## Using arrays
 
-In Python, we used the for loop to iterate through lists:
+In Python, we used the `for` loop to iterate through lists:
 
 ```python
-for item in list:
+for item in L:
     print(item)
 
-for i in range(len(list)):
-    print(list[i])
+for i in range(len(L)):
+    print(L[i])
 ```
 
 Similarly, C++'s `for` loop comes in handy when accessing arrays.
@@ -146,7 +149,6 @@ for (int i = 0; i < 5; i++) {
 **Be careful!** There is no easy way to check the size of an array, unlike Python and `len()`. It is very, very easy to accidentally access items outside your array. For example, this piece of code gets the sum of the elements in an array:
 
 <div class="split">
-
 <div>
 **Code**
 
@@ -169,20 +171,470 @@ int main() {
 **Output**
 
 ```
-14685632
+[💩]
 ```
 
 </div>
+</div>
 
-You'd expect it to output 15, but instead it's printing a very big, garbage value. That's because you accidentally accessed an element outside the array: you looped from indexes 0 to 5, *including* 5, and arr[5] is outside the array. This is another frequent source of `Segmentation fault`s or garbage values, so watch out for things like this in your code.
+You'd expect it to output 15, but instead it's printing a garbage value. That's because you accidentally accessed an element outside the array: you looped from indexes 0 to 5, *including* 5, and arr[5] is outside the array. This is another frequent source of `Segmentation fault`s or garbage values, so watch out for things like this in your code.
 
 ## Multidimensional arrays
 
+Like in Python, we can also declare multidimensional arrays, i.e. arrays of arrays:
 
+```
+int arr[3][3];
+```
+
+***************************
+*
+*  int arr[3][3]:
+*
+*      +---+---+---+
+*  [0] |   |   |   |
+*      +---+---+---+
+*  [1] |   |   |   |
+*      +---+---+---+
+*  [2] |   |   |   |
+*      +---+---+---+
+*       [0] [1] [2]
+*
+***************************
+
+Accessing it is very similar to how you would access it in Python: access the row first, then the column:
+
+```
+arr[1][2] = 5;      // second row, third column
+```
+
+*****************************************************
+*
+*  row
+*      +-----------+-----------+-----------+
+*  [0] | arr[0][0] | arr[0][1] | arr[0][2] |
+*      +-----------+-----------+-----------+
+*  [1] | arr[1][0] | arr[1][1] | arr[1][2] |
+*      +-----------+-----------+-----------+
+*  [2] | arr[2][0] | arr[2][1] | arr[2][2] |
+*      +-----------+-----------+-----------+
+*           [0]         [1]          [2]     column
+*
+*****************************************************
+
+You can also initialize it like you would initialize one-dimensional lists. Simply nest the braces as needed.
+
+```
+int arr[3][3] = {
+    {1, 2, 3},
+    {4, 5, 6},
+    {7, 8, 9}
+};
+```
+
+***************************
+*
+*  int arr[3][3]:
+*
+*      +---+---+---+
+*  [0] | 1 | 2 | 3 |
+*      +---+---+---+
+*  [1] | 4 | 5 | 6 |
+*      +---+---+---+
+*  [2] | 7 | 8 | 9 |
+*      +---+---+---+
+*       [0] [1] [2]
+*
+***************************
+
+(C++ doesn't actually require you to nest the braces; you may simply list it sequentially and it will put each element in starting from the top-left. Nesting braces will help you visualize the array, though.)
+
+Like before, leaving out an element, row, or column in the braces will set it to 0. Leaving out the size in the brackets, however, will result in an error. [^fn1]
+
+In Python, we used nested `for` loops to iterate through multidimensional arrays:
+
+```python
+for row in L:
+    for item in row:
+        print(item)
+
+for i in range(len(L)):
+    for j in range(len(L[i])):
+        print(L[i][j])
+```
+
+In the same vein, can also nest C++'s `for` loops to iterate through multidimensional arrays. Again, be mindful of where you're iterating to so you won't accidentally access somewhere you shouldn't.
+
+```cpp
+for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+        cout << arr[i][j] << " ";
+    }
+    cout << endl;
+}
+```
 
 # Arrays are pointers
 
+Since arrays are stored in memory, it should make sense that pointers and arrays should fit together. In fact, arrays are just pointers!
 
+<div class="split">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int arr[5] = {1, 2, 3, 4, 5};
+    cout << arr << endl;
+    cout << *arr << endl;
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+0x66fdf0
+```
+
+</div>
+</div>
+
+When used alone, an array is simply a pointer to the first element in the list: you can dereference it as normal. In that sense, `*arr == arr[0]`.
+
+## Pointer arithmetic
+
+Let's take a quick detour to **pointer arithmetic**. Pointers point to addresses, but if you've noticed, these addresses are really just numbers corresponding to where they point to in memory. It should make sense, then, that we can define operations on memory to move addresses around. We can:
+
+* add a constant to a pointer: `ptr + 1` or `ptr++`
+* subtract a constant from a pointer: `ptr - 1` or `ptr--`
+* subtract two pointers together: `ptr1 - ptr2`
+* compare two pointers: `ptr1 > ptr2`
+
+Let's examine these operation within the context of a pointer `int *p`. Let's say this pointer points to the location `0x143c0ffeec`, where the integer `int x = 5` lives:
+
+<div class="split">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int x = 5;
+    int *p = &x;
+    cout << "p is " << p << endl;
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+p is 0x143c0ffeec
+```
+
+</div>
+</div>
+
+*****************************************
+*
+*  0x143c0ffe__:
+*
+*    ea   eb   ec   ed   ee   ef   f0
+*  +----+----+-------------------+----+
+*       |    |                5  |
+*  +----+----+-------------------+----+
+*            ^
+*            |
+*            '--* int *p
+*****************************************
+
+Adding a constant to a pointer will move the pointer 1 `int`'s worth of bytes to the left:
+
+<div class="split">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int x = 5;
+    int *p = &x;
+    cout << "p was " << p << endl;
+    p++;    // or p = p + 1
+    cout << "p is now " << p << endl;
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+p was 0x143c0ffeec
+p is now 0x143c0ffef0
+```
+
+</div>
+</div>
+
+*****************************************
+*
+*  increment p by 1
+*     p = p + 1   or   p++
+*
+*    ee   ef   f0   f1   f2   f3   f4
+*  +----+----+----+----+----+----+----+
+*          5 |    |    |    |    |
+*  +----+----+----+----+----+----+----+
+*            ^
+*            |
+*            '--* int *p
+*****************************************
+
+Note that the pointer actually moved 4 bytes to the left (`ec` to `f0`), not just 1. `p++` does **not** simply increment by one byte:
+
+*****************************************
+*
+*  ⚠ NOT p++!
+*
+*    ea   eb   ec   ed    ee   ef   f0
+*  +----+----+-------------------+----+
+*       |    |                5  |
+*  +----+----+-------------------+----+
+*                  ^
+*                  |
+*                  '--* int *p
+*****************************************
+
+If this happened, the pointer would be pointing in the middle of a variable. Trying to change - let alone dereference - this pointer will cause you to change only parts of two variables at once, which not only doesn't make sense, but would at worse cause your program to crash.
+
+Subtracting a constant from a pointer works in the same way:
+
+<div class="split">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int x = 5;
+    int *p = &x;
+    cout << "p was " << p << endl;
+    p--;    // or p = p - 1
+    cout << "p is now " << p << endl;
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+p was 0x143c0ffeec
+p is now 0x143c0ffee8
+```
+
+</div>
+</div>
+
+*****************************************
+*
+*  decrement p by 1
+*     p = p - 1   or   p--
+*
+*    e7   e8   e9   ea   eb   ec   ed
+*  +----+----+----+----+----+----+----+
+*       |    |    |    |    |        5
+*  +----+----+----+----+----+----+----+
+*       ^
+*       |
+*       '--* int *p
+*****************************************
+
+Always remember that incrementing or decrementing a pointer moves you to the **next possible space** for a variable of that type, *not the next byte*. So an `int *pi = &i; pi++` would move `pi` 4 bytes to the right, where the next possible `int` could be located; `double *pd = &d; pd--` would move `pd` 8 bytes to the left, and so on.
+
+Subtracting two pointers is a bit more intuitive; it tells you how far two pointers pointing to the same type of variable are from each other. For example, given two pointers `int *px` pointed at `0x143c0ffee8` and `int *py` pointed at `0x143c0ffeec`:
+
+<div class="split">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int x = 5, y = 7;
+    int *px = &x, *py = &y;
+    cout << "px is " << px << endl;
+    cout << "py is " << py << endl;
+    cout << "py - px = " << py - px << endl;
+    cout << "px - py = " << px - py << endl;
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+px is 0x143coffee8
+py is 0x143coffeec
+py - px = 1
+px - py = -1
+```
+
+</div>
+</div>
+
+*****************************************
+*
+*
+*                int *py *--.
+*                           |
+*                           v
+*    e7   e8   e9   ea   eb   ec   ed
+*  +----+----+----+----+----+----+----+
+*       |                   |
+*  +----+----+----+----+----+----+----+
+*       ^
+*       |
+*       '--* int *px
+*****************************************
+
+`py - px` would return the "distance" between both pointers, which is 1, since `py` is 1 `int`'s bytes ahead of `px`. Similarly, `px - py` would return -1, since `px` is 1 `int`'s bytes behind `py`.
+
+If you're having trouble visualizing what these three operations return, treat the address each pointer is pointing to as a number, and let `D` be the number of bytes a variable a pointer is pointing to is occupying. Then
+
+* `p + k` moves the pointer `Dk` bytes to the right, from the address `xp` to the address `xp + Dk`.
+* `p - k` moves the pointer `Dk` bytes to the left, from the address `xp` to the address `xp - Dk`.
+* `p2 - p1` measures the "distance" between two pointers pointing to the same type of variable; the result is given by `(x2 - x1) / D`, where x1 and x2 are the addresses of p1 and p2, respectively.
+
+Lastly, pointer comparison simply tells you which pointer is "farther", i.e. which pointer has the greater address. Pointer equality `==` or inequality `!=` checks if two pointers point to the same thing. You'll be encountering more of the latter as we go on.
+
+Before we move on, a few notes:
+
+* The standard assumptions about the operators we use here - their behaviors and how they interact with one another - still apply. This will help you navigate the particularly tricky ways some people use pointers. For example:
+
+    ```
+    *p++ = 5;
+    ```
+
+    Recall that `p++` *returns* itself first, then *increments* right after. We also note that `++` will execute first before p; that is, `*p++ == *(p++)`. Using this, we can then infer that the line of code above will (1) pass `p` to `*`, (2) increment `p`, then (3) dereference and assign 5 to where `p` *pointed to before* (versus where it points to now).
+
+## Pointers and 1D arrays
+
+Pointer increments and decrements don't really make sense for a lone pointer, since it will always be surrounded by memory that it does not own. But since arrays own a bigger chunk of memory, pointer arithmetic makes more sense here:
+
+<div class="split">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int arr[5] = {1, 2, 3, 4, 5};
+    for (int i = 0; i < 5; i++) {
+        cout << "arr[" << i << "] lives at " << (arr + i) << endl;
+        cout << "arr[" << i << "] contains " << *(arr + i) << endl;
+    }
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+arr[0] lives at 0x66fdd0
+arr[0] contains 1
+arr[1] lives at 0x66fdd4
+arr[1] contains 2
+arr[2] lives at 0x66fdd8
+arr[2] contains 3
+arr[3] lives at 0x66fddc
+arr[3] contains 4
+arr[4] lives at 0x66fde0
+arr[4] contains 5
+```
+
+</div>
+</div>
+
+Notice that we did not access the elements of the array using brackets. Instead, we got the pointer to the first element of the array, added it by a constant $i$, and then dereference it. Turns out, this is exactly what indexing notation `arr[i]` does!
+
+$$\texttt{arr[i] = *(arr + i)}$$
+
+Array indexing, then, is just a shorter way of moving the pointer to the start of the array $i$ positions to the right, and then dereferencing it. This should explain why arrays start at 0:
+
+$$\texttt{arr[0] = *(arr + 0) = *arr}$$
+
+and since `arr` points to the start of the array, `*arr` is the array's first element.
+
+The relationship between pointers and arrays allows us to do some very nasty things with it. We'll be going through riskier and riskier examples here. For example, instead of adding to the pointer that `arr` refers to, we could have simply made a pointer and moved that ourselves:
+
+<div class="split">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int arr[5] = {1, 2, 3, 4, 5};
+    int *pa = arr;
+    for (int i = 0; i < 5; i++) {
+        cout << "arr[" << i << "] lives at " << pa << endl;
+        cout << "arr[" << i << "] contains " << *pa << endl;
+        pa++;
+    }
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+arr[0] lives at 0x66fdd0
+arr[0] contains 1
+arr[1] lives at 0x66fdd4
+arr[1] contains 2
+arr[2] lives at 0x66fdd8
+arr[2] contains 3
+arr[3] lives at 0x66fddc
+arr[3] contains 4
+arr[4] lives at 0x66fde0
+arr[4] contains 5
+```
+
+</div>
+</div>
+
+Notice that we made another pointer that points to where `arr` points, instead of just using `arr`. Remember: while `arr` *functions* like a pointer, it is still an array, *not* a pointer. We can't move `arr` itself, so we need to make another pointer and move that instead.
+
+*More examples soon!*
+
+## Pointers and 2D arrays
+
+*Soon!*
+
+[^fn1]: You can technically leave out everything except the last dimension, for complicated reasons. You're better off specifying all dimensions anyway, especially for something as messy as multidimensional arrays.
 
 <script>
 window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;

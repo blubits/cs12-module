@@ -99,7 +99,7 @@ In C++, all variables live in memory. We can actually see where each variable li
 <div>
 **Code**
 
-```cpp
+~~~cpp
 #include <iostream>
 using namespace std;
 
@@ -109,7 +109,7 @@ int main() {
     cout << "a lives at " << &a << endl;
     return 0;
 }
-```
+~~~
 </div>
 <div>
 **Output**
@@ -127,13 +127,13 @@ If we think of memory as a big list of bytes, the address of a variable is simpl
 *
 *  0xfff000b__:
 *
-*   ca   cb   cc   cd    ce   cf   cg
+*    ca   cb   cc   cd   ce   cf   d0
 *  +----+----+----+----+----+----+----+
-*  |    |    |    |    |    |    |    |
+*       |    |    |    |    |    |
 *  +----+----+----+----+----+----+----+
-*             ^
-*             |
-*             '--o int a;
+*            |
+*            |
+*            '--o int a;
 *****************************************
 
 But our `int` variable doesn't fit in just one byte! Each data type requires a certain number of bytes. For example, `int`s require 4 bytes, or 32 bits, of memory. (This is why an `unsigned int` can express numbers up to 2^32 - 1.) So while `a`'s address is at `cc`, it actually occupies the space from `cc` to `cf`.
@@ -142,15 +142,15 @@ But our `int` variable doesn't fit in just one byte! Each data type requires a c
 *
 *  0xfff000b__:
 *
-*             .--o a starts here, but...
-*             |
-*             v
-*   ca   cb   cc   cd    ce   cf   cg
-*  +----+----+----+----+----+----+----+
-*  |    |    |  0 |  0 |  0 |  5 |    |
-*  +----+----+----+----+----+----+----+
-*
+*            .--o a starts here, but...
+*            |
+*            |
+*    ca   cb | cc   cd   ce   cf   d0
+*  +----+----+-------------------+----+
+*       |    |                 5 |
+*  +----+----+-------------------+----+
 *             \_________________/
+*
 *               a occupies this space
 ********************************************
 
@@ -160,7 +160,7 @@ Therefore, the address of a variable, coupled with its data type's size, uniquel
 <div>
 **Code**
 
-```cpp
+~~~cpp
 #include <iostream>
 using namespace std;
 
@@ -182,7 +182,7 @@ int main() {
 
     return 0;
 }
-```
+~~~
 </div>
 <div>
 **Output**
