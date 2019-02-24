@@ -1,0 +1,403 @@
+<meta charset="utf-8">
+
+**Sample Quiz 1 Answer Key**
+
+Quick foreword: Quiz 1 will cover the following topics:
+    - Basic C++ constructs
+    - Scope
+    - Pointers
+    - Arrays
+    - Strings
+    - Dynamic memory allocation
+    - Enums, structs, classes
+
+I've tried my best to cover everything above in the samplex, although I couldn't touch on streams and strings that much (since it requires a lot of knowledge of the standard library, and Sir already said there'd be none of that there.)
+
+# What Would C++ Do?
+
+* (c) **Output**:
+
+    ~~~
+    5
+    30
+    ~~~
+
+    **Explanation**:
+
+    Fairly straight-forward: recall that blocks of code, denoted by brackets `{}`, also denote the scope at which each variable exists. The `y` inside the brackets is equal to 5; outside of it, it's equal to 20.
+
+* (d) **Output**:
+
+    ~~~
+    25
+    ~~~
+
+    **Explanation**:
+    As `times()` is a pass-by-reference function, it will manipulate the array `arr` in place. After the for loop, arr[] becomes
+
+    ```
+           0  1  2   3   4
+    arr = [1, 4, 9, 16, 25]
+    ```
+
+    and so `arr[arr[1]` = `arr[4]` = 25.
+
+* (e) **Output**:
+
+    ~~~
+    6
+    ~~~
+
+    **Explanation**:
+
+    Notice that `twice(double x)` doesn't exist, but `twice(int x)` does. Since a `double` is "kind of" like an `int`, C++ will "cast down" `double 3.14` to an `int 3`.
+
+* (f) **Output**:
+
+    ~~~
+    5 6
+    ~~~
+
+    **Explanation**:
+
+    Let's try to trace this code line by line.
+
+    ```cpp
+    int x = 5, y = 6;
+    int *px = &x, *py = &y;
+    int **ppx = &px;
+    ```
+
+    At this point, the variables look somewhat like this:
+
+    *******************************************
+    *
+    *
+    * +-----+---+     +----+---+     +---+---+
+    * | ppx | *-+---> | px | *-+---> | x | 5 |
+    * +-----+---+     +----+---+     +---+---+
+    *                 | py | *-+---> | y | 6 |
+    *                 +----+---+     +---+---+
+    *
+    *******************************************
+
+    So
+
+    ```
+    *py += 5;
+    ```
+
+    should change py to 6.
+
+    Now,
+
+    ```
+    px = py
+    ```
+
+    will make `px` now point to where `py`'s pointing to:
+
+    *******************************************
+    *
+    *
+    * +-----+---+     +----+---+     +---+---+
+    * | ppx | *-+---> | px | *-+-.   | x | 5 |
+    * +-----+---+     +----+---+ |   +---+---+
+    *                 | py | *-+-+-> | y | 6 |
+    *                 +----+---+     +---+---+
+    *
+    *******************************************
+
+    So by following the arrows, `*(*ppx) = *px = y` and so
+
+    ```
+    *(*ppx) -= 5;
+    ```
+
+    will make `y = 6` again.
+
+* (g) **Output**:
+
+    ~~~
+    2 4 6 8 5
+    ~~~
+
+    **Explanation:**
+
+    This code is fairly straightforward, except for the gotcha that we passed in 4 as the "size" of the array to `twice`, so it will only change the first four variables.
+
+    Note that arrays are passed to functions by reference by default. (That's because arrays act like pointers.)
+
+* (h) **Output**:
+
+    ~~~
+    H
+    e
+    l
+    l
+    o
+    !
+    10
+    ~~~
+
+    **Explanation:**
+
+    By pointer arithmetic, `*(str + i) = str[i]` (see [here](3.md.html#arraysarepointers/pointersand1darrays)) for why that's the case. Also, outside the for loop, `i = 10` (note that `i = 0 to 6` only inside the loop.)
+
+* (i) **Output**:
+
+    ~~~
+    5 6 5
+    ~~~
+
+    **Explanation:**
+
+    A few things to remember here: one, `x` and `y` are outputted before they are ever swapped, and two, `mystery_swap` simply returns the value of x before the swap. So you don't actually have to physically perform the swap to answer this question (although, if you're interested if you got the swap correctly, `x = 13` and `y = -2`.)
+
+* (j) **Output**:
+
+    ~~~
+    Compilation error
+    ~~~
+
+    **Explanation:**
+
+    Notice that `&b`, of type `int*`, is being assigned to `next_node.next`, of type `Node*`. This is illegal, so your compiler will complain that this code has an error.
+
+* (k) **Output**:
+
+    ~~~
+    Infinite loop
+    OR
+    Runtime error
+    ~~~
+
+    **Explanation:**
+
+    Let's examine the function body of `length_first_word()` more closely.
+
+    ```
+    for (char *p = str; *p != ' '; p++) {
+        len++;
+    }
+    ```
+
+    Notice: the loop will only terminate if it encounters a space in the string. But for strings with single words, that's never the case! So the loop goes on forever (`Infinite loop`), accessing parts of memory that are beyond its control (`Runtime error`).
+
+    If you're curious, this version of the code will work correctly for all strings.
+
+    ```
+    for (char *p = str; *p != ' ' && *p != '\0'; p++) {
+        len++;
+    }
+    ```
+
+* (l) **Output**:
+
+    ~~~
+    !olleH
+    ~~~
+
+    **Explanation:**
+
+    A closer examination at `char *mystery_string` reveals that it actually attempts to reverse the string. If you're wondering why this is, notice the line inside the for loop: it assigns the i-th character of the new-string to the (len - i - 1)-th character of the old string.
+
+* (m) **Output**:
+
+    ~~~
+    3
+    ~~~
+
+    **Explanation:**
+
+    This is another scoping problem. `multiply_index()` will change not the `arr` inside the function, but the `arr` in the global scope, the one with elements `{10, 11, 12, 21, 22}`, as that's the array that it sees. But the arr inside the function will never get changed.
+
+    An easy fix is to add the array itself as an argument, so it's unambiguous which array is being manipulated by the function. If you really did mean to change the global array, putting two colons beside the name like so `::arr[2]` will enable you to see the correct value, 24.
+
+* (n) **Output**:
+
+    ~~~
+    800
+    8
+    ~~~
+
+    **Explanation:**
+
+    This is the important distinction between arrays and pointers. See, `a` refers to the actual array itself; it is a name attached to the first element and the 99 elements that occur after it. So `sizeof` should return the actual size of the array.
+
+    The dynamically-allocated array created via `new`, however, is unnamed; it exists as a thing in the heap that your operating system does fine managing on its own. `*p` is simply a *pointer* to that thing, but it is *not the thing itself*, since `new[]` can only return a pointer to the first element of the "thing" in the heap.
+
+    Cool sidenote: Since `sizeof(arr)` returns the size of the array in bytes, a dirty hack to get the length of the array is given by
+
+    `sizeof(arr) / sizeof(type)`
+
+    where `type` is the data type of the array. For example,
+
+    `sizeof(a) / sizeof(long long int)`
+
+    should return `800 / 8` or 100.
+
+# The 25-Point Problem(s)
+
+* (a) We never actually "move" the pointer around; thus, we keep on overriding the second element of the linked list, and instead of a continuous
+
+    ```
+    0 -> 1 -> 2 -> ... -> t
+    ```
+
+    you instead get
+
+    ```
+    0 -> t
+    ```
+
+    The easiest way to fix this is to simply add
+
+    ```
+    ptr = ptr->next;
+    ```
+
+    after line 20.
+
+* (b) We're continuously creating new memory on the heap (see line 5) without actually clearing it. So when we continuously create new strings in the loop, we lose access to the strings we've already created. To fix this, `delete[]` the string right after printing it.
+
+* (c) `arr`, the variable that `int *range` returns, is a local, stack-allocated variable. It only lives for as long as the function lives; after it returns, the array that `arr` points to doesn't actually exists anymore, and the `for` loop inside `main()` will print garbage values. This is an easy fix; simply declare `arr` on the heap through `new[]` instead of on the stack.
+
+* (d) This is a very sneaky syntax problem. For one, semicolons are needed after declaring `enum`s, `struct`s, and `class`es, so this code won't even compile! Adding semicolons in lines 11 and 16 should fix this. Also, recall that values in an `enum class` are called via `ClassName::VALUE`, not just `VALUE` like regular `enum`s. To fix this, replace all instances of `BLACK` with `Color::Black`.
+
+* (e) There's one obvious error and one more subtle error. First, you're trying to assign `new_node` of type `Node` to `ptr->next` of type `Node*`. This will make your compiler cry. To fix this, simply add `&` before `new_node` in line 15.
+
+    In a more subtle manner, notice we're passing a `Node* ptr` to the function. We haven't actually handled the case when `ptr == nullptr`; especially in the context of nodes and linked lists, this is a very common thing that all functions accepting linked lists should be able to handle. A quick check for `nullptr` should make this function work consistently, like so:
+
+    ```cpp
+    void append(Node* ptr, int n) {
+        if (ptr == nullptr) return;
+        Node new_node(n);
+        ptr->next = new_node;
+    }
+    ```
+
+# Hurry Up!
+
+* (a) $\O(mn^2)$. Selection sort runs in $\O(n^2)$ time, since it goes through the $n$-element array approximately $n$ times. (The exact details, of course, depends on the implementation of your algorithm.) This sort will be done for each $m$ rows of the array, with each row having $n$ elements.
+
+* (b) $\O(n^2)$. The inner loop runs a constant 5 times. The outer loop runs about $n$ times - while this isn't actually exactly correct, remember that it's okay to estimate what would happen in the worst case, and we're guaranteed that this loop will run no more than $n$ times. Obviously, the outer loop will run 5 times. This will give us $\O(n) * \O(n) * \O(5) = \O(n^2)$.
+
+* (c) $\O(1)$. We actually never go through the array; we only access the last two elements, if they exist. Each array accessing is one step, and there are a fixed amount of steps that will be run no matter how big the array actually is.
+
+* (d) $\O(n^2)$. The sort is $O(n^2)$ (the reasoning is similar to (a)) and the sum is $O(n)$ (since it goes through the entire array exactly once). $O(n^2)$ grows faster than $O(n)$, so in total, the algorithm runs in $O(n^2)$ time.
+
+# 360 No-Scope
+
+Here's a quick tip in order to easily determine what variable a certain line of code is attempting to access: **search outwards**. Start from the scope at which the variable is being accessed (inside a loop, block, or function) and then, if you can't find it there, go outwards until you reach the global scope. If you still can't find it, the variable is out of scope and `Invalid`. This is especially handy when dealing with functions: accessing a variable inside a function, its "parent scope", so to speak, is the *global scope*, NOT the scope of `int main()` or whichever function it was ran from.
+
+With this in mind, it should be fairly easy to evaluate the value of each variable at a certain point in the time of execution. As the instruction says, it's helpful to imagine inserting outputting each variable at that certain line and seeing what it outputs. Be mindful of scopes inside `for` loops; in this special case, variables declared inside the parentheses `()` are part of the scope of the `for` loop's block.
+
+* (b)
+
+    ~~~
+    k = 5
+    g = 10
+    s = Invalid
+    m = 20
+    ~~~
+
+* (c)
+
+    ~~~
+    g = 5
+    s = 40
+    m = 20
+    ~~~
+
+* (d)
+
+    ~~~
+    g = 0
+    s = 0
+    ~~~
+
+* (e)
+
+    ~~~
+    s = 10
+    n = 15
+    g = 5
+    ~~~
+
+* (f)
+
+    ~~~
+    l = 15
+    m = 15
+    s = 5
+    ~~~
+
+* (g)
+
+    ~~~
+    g = 10
+    s = Invalid
+    ~~~
+
+* (h)
+
+    ~~~
+    k = 20
+    n = 30
+    m = 15
+    ~~~
+
+# Potpourri
+
+1. `arr1` is a *stack-allocated, local* variable. It is accessible through its name (or through any pointers that point to the variable), its scope is always only within the block it is contained (or global, if it's declared outside any block), and it will only last until the block finishes (or when the program ends, for global variables). This is handy for most use cases, when we just want to use variables to store the state of our function or program and we don't really need either (1) a lot of memory or (2) a variable that's accessible everywhere.
+
+    `arr2`, on the other hand, is a *heap-allocated, dynamic* variable. It is only accessible through any pointers that point to it in some way; it has no name to its own, so if we lose the pointers that point to it, it is eternally inaccessible and useless. It is accessible throughout the entire function, as long as the pointers are correctly pointed to it, and it will last until either the program ends or we `delete[]` it on our own. This is useful if you need a lot of memory to use or you want a flexible variable that can be used throughout your entire program. (Imagine a browser trying to store your internet history in memory. It can't do that in a local variable, lest it gets deleted as soon as a function ends; thus, a dynamic variable should be used.)
+
+2. No, don't listen to Alice. The restrictions that are imposed on a reference make our `Node` class useless. For example:
+
+    * Since references can only be assigned once, we can't make our `node.next` point to different things. Imagine making a linked list and finding out you can't move any of the elements around!
+
+    * References need to be created as soon as they're used, so there's not much in the way for the concept of a node "pointing to nothing" as we have now.
+
+3. Imagine the following C++ class.
+
+    ```cpp
+    class Vector {
+        int* data;
+        int sz;
+
+        public:
+        Vector(int z);
+    };
+
+    Vector::Vector(int z) {
+        data = new int[z];
+        sz = z;
+    }
+    ```
+
+    In the constructor, we create a heap-allocated variable that we can then use to store whatever data we need on the Vector.
+
+    What happens if we lose access to the Vector? We also lose access to the heap-allocated memory inside it, and thus we have inaccessible, useless memory - a *memory leak*, in other terms. To solve this, we make a destructor, called whenever an object isn't used anymore. Here, you can manually `delete[]` whatever variables you declared dynamically on the heap so memory leaks won't be lost.
+
+    Of course, there are some more practical, software engineering benefits to a destructor that are more evident in complex programs (managing state across your program's objects, or signaling to other functions that an object isn't being used anymore). But this example is the most evident for the current concepts we've learned in C++.
+
+
+<script>
+window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
+ga('create', 'UA-68097958-3', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+<script>
+window.markdeepOptions = {
+    tocStyle: 'medium'
+}
+</script>
+
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github-gist.min.css">

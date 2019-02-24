@@ -10,9 +10,11 @@ But why and how do we analyze algorithms? We've discussed - and are going to dis
 
 For a computer scientist, cutting running time in half, or even a quarter, is meaningless, especially since computers are getting better and better at solving things. What matters is the **order** at which your running time belongs to. To see what this means, let's take a look at the speed at which some functions run below.
 
-# Computational complexity
+# RAM model of computation
 
-To be able to more accurately compare different algorithms, we must have a model that allows us to track their running times in the same manner. For now, let's use the **RAM model of computation**. Instead of counting in seconds, we count the number of time (or resource) units (let's call them 'steps') consumed by an algorithm. Each basic operation - addition `+`, multiplication `-`, function calls, etc. - takes one step. Each time we access memory - through array indexing `[]` or pointer dereferencing `*`, for example - we also take one step.
+To be able to more accurately compare different algorithms, we must have a model that allows us to track their running times in the same manner. Comparing running times between algorithms won't be accurate, since it will vary depending on a lot of factors - from the computer you're using to the programs you're running on it - so we must have a model that can reduce the effect of these external factors.
+
+For now, let's use the **RAM model of computation**. Instead of measuring speed in seconds, we count the number of time (or resource) units (let's call them 'steps') consumed by an algorithm. Each basic operation - addition `+`, multiplication `-`, etc. - takes one step. Each time we access memory - through array indexing `[]` or pointer dereferencing `*`, for example - we also take one step. Note that loops, function calls, and other more complex constructs are not basic operations; we can't quantify their speed enough to warrant calling them a single step.
 
 With this, we can measure the **time complexity** of an algorithm by counting the number of steps it takes to execute. Let's take a look at a couple of functions and try to measure their time complexities.
 
@@ -24,15 +26,303 @@ int sum(int x, int y) {
 }
 ```
 
-Using the RAM computation model, let's try to
+Using the RAM computation model, let's try to count how many steps it takes for this function to execute:
 
-*Soon!*
+*****************************************************************
+*
+* int sum(int x, int y) {
+*
+*     int a = x + y;        ----> 2 steps:
+*                                   1 operation (x + y)
+*                                   1 assignment (a = x + y)
+*
+*     cout << a << endl;    ----> 1 step
+*
+*     return a;             ----> 1 step
+*                                ----------
+*                                 4 steps
+* }
+*
+*****************************************************************
 
-# Big O notation
+We can say that the function `sum(x, y)` takes 4 steps to execute. Notice that, no matter how big `x` or `y` is, the function will still take 4 steps to execute.
 
-<!-- NOTE: Time complexity of program is dependent on the most complex part of the program. >
+Let's look at another function that's a bit more complicated. This function takes the total sum of an array of integers:
 
-*Soon!*
+```cpp
+int sum(int[] arr, int sz) {
+    int sum = 0;
+    for (int i = 0; i < sz; i++) {
+        sum += arr[i];
+    }
+    return sum;
+}
+```
+
+Like last time, let's process the function and see how many steps it would take for it to run.
+
+*****************************************************************
+*
+* int sum(int[] arr, int sz) {
+*
+*     int sum = 0;                          ----> 1 step
+*
+*     for (int i = 0; i < sz; i＋＋) {        ----.
+*         sum += arr[i];                        |   ?
+*     }                                     ----'
+*
+*     return sum;                           ----> 1 step
+*
+* }
+*
+*****************************************************************
+
+We can't easily see how many steps it takes to run the `for` loop inside `sum`, so let's try to break it down a bit more.
+
+*****************************************************************
+*
+*        for (int i = 0; i < sz; i＋＋) {
+*            sum += arr[i];
+*        }
+*
+*              +---+---------+
+*              | i | i < sz? |
+*              +---+---------+
+*         init | 0 |    T    | i++
+*              +---+---------+
+*              | 1 |    T    | i++
+*              +---+---------+
+*              | 2 |    T    | i++
+*              +---+---------+
+*
+*                     .
+*                     .
+*                     .
+*
+*            +--------+---------+
+*            | sz - 1 |    T    | i++
+*            +--------+---------+
+*            |     sz |    F    | (END)
+*            +--------+---------+
+*
+*****************************************************************
+
+Based on what we know about how `for` loops work, we can deduce that
+
+* the initialization step, `int i = 0;`, will run once;
+* the condition, `i < sz;`, will be checked `sz + 1` times, from `i` = 0 to `sz`;
+* the body of the function will run `sz` times, 1 less than the condition, since the body will not run when the condition hits false on `i = sz`; and
+* similarly, the increment `i++` will run `sz` times.
+
+We put this back in our original attempt at analysis:
+
+*****************************************************************
+*
+* int sum(int[] arr, int sz) {
+*
+*     int sum = 0;                          ----> 1 step
+*
+*          .--> 1 step  .--> sz + 1 steps
+*          |            |       .---> sz steps
+*          |            |       |
+*     for (int i = 0; i < sz; i＋＋) {
+*         sum += arr[i];                    ----> sz steps
+*     }
+*
+*     return sum;                           ----> 1 step
+*                                          -----------------
+*                                           3(sz) + 4 steps
+* }
+*
+*****************************************************************
+
+So `sum(int[] arr, int sz)` takes $3\cdot\textrm{sz} + 4$ steps to execute. Notice that the running time of our algorithm now depends on the size of the array `sz`. This is a key concept of algorithm analysis: **the speed of an algorithm is dependent on the size of the input**. While some functions, like our `sum(int x, int y)` function earlier, don't depend on the size of the input,most functions require that you at least look at some part of the data fed into it to produce meaningful output.
+
+Let's express this thought in a more mathematical sense. Let $T(n)$ be a function that describes the running time of the `sum(int[] arr, int sz)` algorithm above. Then
+
+$$T(n) = 3n + 4$$
+
+This is neat - we have a function that we can analyze, graph, and work with like any other mathematical function! In particular, we can accurately compare the running times of two algorithms by graphing them. For example, let's graph $T_1(n) = 4$ and $T_2(n) = 3n + 4$ that describes the running time of the two algorithms above.
+
+![Graph of $T_1(n)$ and $T_2(n)$.](img/04-graph1.png width="500px")
+
+As you can see, as $n$ increases, $T_2(n)$ also increases, while $T_1(n)$ stays the same. That means that our `sum()` array algorithm should generally run slower than the two-integer `sum()` algorithm from earlier.
+
+# Computational complexity
+
+This method of manually counting down steps does get very tedious and complex for a number of reasons. For one, the time complexity of more complicated functions can't be expressed as nicely as our previous examples. Take, for example, insertion sort:
+
+```cpp
+void insertion_sort(int[] arr, int sz) {
+    for (int i = 1; i <= sz; i++) {
+        int j = i;
+        while (j > 0 && arr[j - 1] > arr[j]) {
+            int temp = arr[j];
+            arr[j] = arr[j - 1];
+            arr[j - 1] = temp;
+        }
+    }
+}
+```
+
+Notice that $T(n)$ will depend not only on the *size* on the input, but on what the input actually is; depending on how your array was initially arranged, some parts of the code will run in more or less steps.
+
+It would be nice if we could take "shortcuts", in a sense, so our analysis wouldn't be that difficult. To do this, imagine analyzing a certain algorithm's running time based on various kinds of inputs. We can then discuss the complexity of the algorithm by case, depending on what input gets fed into the algorithm:
+
+* **worst-case complexity**, for the worst possible input to the algorithm (i.e. one that will make it run the most steps),
+* **best-case complexity**, for the best possible input to the algorithm (i.e. one that will make it run the least steps), and
+* **average-case complexity**, for the "mean" or "averaged-out" input to the problem (i.e. right in between of the best and worst-case complexities).
+
+For our insertion sort example above, a sorted array would yield the algorithm's best-case complexity, while a reverse-sorted array would yield its worst-case complexity. (Feel free to verify why a sorted array would make insertion sort run in less steps, and likewise for reverse-sorted arrays.)
+
+In the analysis of algorithms, it's usually nice to have a guarantee as to how fast an algorithm will run. That's why we usually give a pessimistic estimate - the worst-case - when analyzing a certain algorithm, so we can allocate the maximum amount of time and resources for that algorithm to run. Think of it as reserving a room that seats more people than you expect; it's better for there to be empty seat than there to be people without seats.
+
+As an example, let's do the worst case analysis for insertion sort. In the worst case, when the algorithm is sorted in reverse, each loop will run about 1 less step than before. Therefore,
+
+$$
+\begin{align*}
+    T(n) &= c \cdot (n + (n - 1) + (n - 2) + \cdots + 1) \\
+    &= c \cdots \frac{n(n - 1)}{2}
+\end{align*}
+$$
+
+for some $c$ (which we use as a "placeholder" for the number of actual steps it takes to run per iteration). We can see that, in the worst case, it takes a quadratic number of steps to run insertion sort.
+
+# Big-O notation
+
+Besides the trouble of accounting for different types of test-cases, counting algorithm steps as precisely as we're doing now also opens up a lot of possibilities for errors and difference. What we count as multiple steps might only count as one to others, even under the same computational model as before.
+
+A key insight in algorithm analysis, however, is that these small details - constant coefficients and terms - do not actually matter that much. Consider the following functions describing the (worst-case) time complexity of two algorithms:
+
+$$T_1(n) = 5n + 40$$
+$$T_2(n) = 20n + 1$$
+
+![Graph of $T_1(n)$ and $T_2(n)$.](img/04-graph2.png width="500px")
+
+Initially, $T_1(n)$ is slower than $T_2(n)$; eventually, the latter outgrows the former, and so the second algorithm should be slower than the first.
+
+Let's try to zoom out a bit further.
+
+![Bigger graph of $T_1(n)$ and $T_2(n)$.](img/04-graph3.png width="500px")
+
+As you can see, the initial slowness of $T_1(n)$ is long gone, largely eclipsed by the size of $n$. We can then confidently say that the algorithm that $T_2(n)$ describes is the slower of the two, since that is the case for most values of $n$. The "lower-order terms" - in this case, the constant - don't actually matter as $n$ grows.
+
+Let's try to graph the running time of another algorithm with regards to the other two:
+
+$$T_3(n) = 2n^2 + 3$$
+
+![Graph of $T_3(n)$ with the two functions earlier.](img/04-graph4.png width="500px")
+
+It's obvious that the running time of the algorithm that $T_3(n)$ describes is vastly slower than the other two functions! Even though $T_3(n)$ had lower coefficients than the two linear functions, in the long run, they didn't actually matter in describing the running time of the algorithm!
+
+This illustrates a key concept in algorithm analysis: **the fastest-growing part of your function is sufficient for describing its running time**, as it contributes the most to the number of steps it needs to run. This means that we can actually ditch manually counting the steps of our algorithm, instead estimating the amount of time it needs to run by looking at the most complex part of an algorithm and observing the amount of steps it needs to run in terms of the size of the input $n$.
+
+Let's formalize this a bit. (Get ready for a bit of math!) Let $T(n)$ be the amount of time it takes for an algorithm to run, in terms of the size of the input. We can say that
+
+$$T(n) = \O(f(n))$$
+
+if, in the long run, $f(n)$ dominates $T(n)$, i.e. $f(n)$ creates an upper bound for $T(n)$. This means that we can actually discuss the running time of an algorithm in terms of a simpler function $f(n)$, since we're guaranteed that the actual running time $T(n)$ is, at most, $f(n)$.
+
+(People in CS usually say that an algorithm with running time $T(n)$ "runs in big-O of $f(n)$ time". Here, the "big O" means the "order" of the algorithm.)
+
+Thus, we can say that
+
+$$T_1(n) = O(n)$$
+$$T_2(n) = O(n)$$
+$$T_3(n) = O(n^2)$$
+
+as can be observed in the graph above.
+
+We can think of big-O notation as classifying the algorithms that we deal with into sets, based on how fast it generally runs. Some functions run in linear time, i.e. $\O(n)$ time; others might run in quadratic $\O(n^2)$, cubic $\O(n^3)$, or even constant $\O(1)$ time. Again, constant coefficients and lower-order terms don't actually matter, because the "dominating" term dictates how it behaves for large $n$. The functions
+
+$$
+\begin{align*}
+T_1(n) &= n^2 \\
+T_2(n) &= 100n^2 + 1 \\
+T_3(n) &= 7n^2 + 100n + 200 \\
+\end{align*}
+$$
+
+are all $O(n^2)$, since only the leading term $n^2$ dominates the graph of the function, and all quadratic functions behave the same way regardless of their coefficient (only differing by a constant multiple). Try graphing all these three functions; you'll see that for large values of $n$, they practically look like the same parabola, only shifted a bit. This is more apparent if you graph a function that is "bigger" than $n^2$, like $n^3$; for big enough $n$, this new function will quickly dominate the other three.
+
+There's a lot of formalities (and a lot of math) regarding big-O notation: if you want to read more on that, see "[Formalities of asymptotic notation](a1.md.html)". For beginners, however, a general intuition of big-O notation is more than enough; it will get you through analyzing the running time of most algorithms. If you want some more help, here's a few helpful tips to quickly get the big-O running time of an algorithm:
+
+* First, identify what $n$, the size of your input, exactly is. This will change how you can identify the number of steps in your algorithm! For example, multiplication is $O(1)$ if you treat an entire number as a single input, but it's actually $O(n^2)$ if you consider $n$ as the number of digits of the number you're multiplying.
+
+* Next, try to "segment" your code into multiple parts, based on the general steps it is taking. For example, for algorithms of this form:
+
+    ```
+    for i from 1 to n:
+        for j from 1 to i:
+            do something
+
+    do something
+    for i from 1 to n/2:
+        do something
+    ```
+
+    it will be helpful to split the algorithm into three: the first for loop, the lone assignment statement, and the second for loop.
+
+* Next, try to identify the Big-O running time of your code. Use the principles of worst-case analysis to your advantage. For example, let's analyze this segment of code:
+
+    ```
+    for i from 1 to n:
+        for j from 1 to i:
+            do something
+    ```
+
+    The outer for loop runs $n$ times, while the inner for loop runs $n$ times in the worst case (why?). We can then say that this for loop runs in $O(n^2)$ time. See how we didn't actually have to count steps manually here, instead estimating the amount of steps it takes to run the code.
+
+    This identity might be helpful to evaluate the running time of for loops:
+    $$O(f(n)) * O(g(n)) = O(f(n) * g(n))$$
+
+* Be careful that you don't treat all steps that look constant as constant! Notice we didn't really care about what `do something` did in the example above, and simply assumed it would run in constant time. But what if the code actually did something like this?
+
+    ```
+    for i from 1 to n:
+        for j from 1 to i:
+            go through array A
+    ```
+
+    While the inner and outer loops still both run $O(n)$ times ($O(n^2)$ when taken combined), the inner command runs in $O(n)$ time, not $O(1)$ time! So this loop actually runs in $O(n^3)$ time. Be careful when assuming that certain steps run in constant time, as it will affect how you analyze your program.
+
+* The most complex part of your program dictates your algorithm's running time. In formal terms,
+
+    $$O(f(n)) + O(g(n)) = O(\textrm{max}(f(n), g(n)))$$
+
+    where $\textrm{max}$ returns the more "dominant" or faster-growing function. For example, say we've successfully identified that the individual parts of a program run in these times:
+
+    ********************************************
+    * for i from 1 to n:
+    *     for j from 1 to i:    <-- O(n^2)
+    *         do something
+    *
+    * do something              <-- O(1)
+    * for i from 1 to n/2:      <-- O(n)
+    *    do something
+    ********************************************
+
+    Thus, the total algorithm of the running time must be $O(n^2)$, since $n^2$ "dominates" the linear-time $n$ and constant-time $1$ parts of your algorithm.
+
+* Note that big-O describes nothing more than an upper bound on the number of steps our algorithm will take. So
+
+* The following are some common big-O descriptions of algorithms we encounter in computer science, and their names. Some of them you won't need to use just yet, but the ones you must be able to understand now are **bolded**.
+
+    |      | Name              | Description |
+    |------|:-----------------:|-------------|
+    | $\O(1)$ | **constant time** | Functions that run in a fixed number of steps, regardless of the size of input. See: accessing the last element of an array, assigning a value to a variable. |
+    | $\O(\log{n})$ | logarithmic time | |
+    | $\O(n)$ | **linear time** | Single passes through arrays, or passes through arrays that run though the whole array at worst. See: linear search. |
+    | $\O(n \log{n})$ | linearithmic time | |
+    | $\O(n^2)$ | **quadratic time** | An inner and an outer pass through an array. See: bubble, selection, and insertion sorts. |
+    | $\O(n^k), k \in \Real^+$ | **polynomial time** | If $k \in \Integer^+$, $k$ nested loops. Make sure that each loop will run in $O(n)$ time! |
+    | $\O(c^n), c \gt 1$ | exponential time | |
+    | $\O(n!)$ | factorial time | |
+
+## References
+
+* http://www3.cs.stonybrook.edu/~algorith/video-lectures/2007/lecture2.pdf
+* https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-00sc-introduction-to-computer-science-and-programming-spring-2011/unit-1/lecture-8-efficiency-and-order-of-growth/MIT6_00SCS11_rec04.pdf
 
 <script>
 window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
@@ -47,7 +337,6 @@ window.markdeepOptions = {
 }
 </script>
 
-<link rel="stylesheet"href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/monokai.min.css">
 <style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
 
 <link rel="stylesheet" href="style.css">

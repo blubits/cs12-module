@@ -1,0 +1,147 @@
+<meta charset="utf-8">
+
+**Strings**
+
+You probably took strings for granted in CS11. That's because strings are so powerful in Python; as the primary way to transmit text, we used it generously and intuitively in our code.
+
+But there's really no "native" way for computers to store characters. After all, computers only really understand numbers, and nothing else. Therefore, it's the programming language's job to find a way to better represent text in such a way that you can easily use it and the computer can easily process it. We'll be discussing two types of strings that C++ can process; the `string` class and the C-string.
+
+# `char`
+
+First, let's discuss the built-in `char` type built into C++ (and C, as an extension). The `char` type can be used to store single characters.
+
+<div class="split">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    char ans;
+    cout << "Do you want to continue? (Y/N) > ";
+    cin >> ans;
+    if (ans == 'Y') {
+        cout << "Sure, you can continue!" << endl;
+    } else if (ans == 'N') {
+        cout << "Goodbye then!" << endl;
+    } else {
+        cout << "Sorry, I don't know what that means." << endl;
+    }
+    return 0;
+}
+
+```
+</div>
+<div>
+**Output**
+
+```markdown
+Do you want to continue? (Y/N) > N
+Goodbye then!
+```
+
+</div>
+</div>
+
+A char literal is demarked by single quotes `''`; this separates it from the strings we've dealt with before, which are demarked by double quotes `""`.
+
+Internally, `char` is nothing more than a single-byte integer. Each integer is mapped by C++ to a certain character using the ASCII representation, which includes most (if not all) of the characters on your keyboard (and some "control characters" like the newline and tab).
+
+![The ASCII character table. Image from Simple Wikipedia.](img/05-ascii-table.png)
+
+Since `char`s are just integers, we can manipulate them just like integers, and we don't have to convert them like in Python. Here are some common ways of using them in C++:
+
+* To check if a character is a number or letter, we can use the comparison operators.
+
+    ```cpp
+    // is the char a lowercase letter?
+    'a' <= c && c <= 'z'
+    // is it uppercase?
+    'A' <= c && c <= 'Z'
+    // is it a number?
+    '0' <= c && c <= '9'
+    ```
+
+* Converting a numerical character to a number is as easy as doing this:
+
+    ```cpp
+    if ('0' <= c && c <= '9') {
+        int i = c - '0';
+    }
+    ```
+
+* Determining the index of a letter from 0-25 is also easy:
+
+    ```cpp
+    if ('a' <= c && c <= 'z') {
+        int i = c = 'a';
+    }
+    ```
+
+    This is useful for ciphers and similar applications.
+
+* In fact, since characters are just integers, we can use them to index through arrays:
+
+    ```cpp
+    int map[128];
+    cout << map['a'] << endl; // corresponds to map[97]
+    ```
+
+# `std::string`
+
+The first type we'll be discussing is a more C++-style way of representing integers: the `string` class. It's very similar to Python's `string` type, except it is mutable, i.e. easily modifiable.
+
+<div class="split">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string
+}
+```
+</div>
+<div>
+**Output**
+
+```
+[💩]
+```
+
+</div>
+</div>
+
+# `char`
+
+# C-strings
+
+<!-- C-strings are the more "bare-metal" representation of strings in C++. -->
+<!-- NOTE: Neither C-strings nor std::strings are really "native" to C++. -->
+
+# References and further reading
+
+* https://www.learncpp.com/cpp-tutorial/27-chars/
+
+<script>
+window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
+ga('create', 'UA-68097958-3', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+<script>
+window.markdeepOptions = {
+    tocStyle: 'medium'
+}
+</script>
+
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github-gist.min.css">

@@ -1,0 +1,146 @@
+<meta charset="utf-8">
+
+**Formalities of asymptotic notation**
+
+We've discussed the use of Big-O notation in algorithm analysis. But Big-O and **asymptotic notations** like it are actually part of a more general study of the behavior of functions, common in mathematics as well as computer science. So it would be nice to have a more rigorous definition for Big-O notation to fully appreciate the power behind this notation and how it can be used. We'll also be discussing alternative notations that computer scientists use to describe algoithm running times.
+
+# Intuitive definition
+
+Let's first recall the intuitive definition we discussed in [section 4](4.md.html):
+
+!!! :Definition
+    Let $T(n)$ be a function defined in terms of $n$. We can say that
+
+    $$T(n) = O(f(n))$$
+
+    if, for large enough values of $n$, $f(n)$ dominates $T(n)$.
+
+Let's also lay down and formalize some common identities for Big-O:
+
+* $O(c \cdot f(n)) = O(f(n))$ for some $c \in \Real$
+
+    We stated this earlier as "constant coefficients don't matter."
+
+* $O(f(n)) + O(g(n)) = O(\mathrm{max}(f(n), g(n)))$
+
+    Intuitively, this simply means that the "bigger" function, the one that dominates the other, dictates the running time of the algorithm (or the behavior of the function).
+
+* $O(f(n)) \cdot O(g(n)) = O(f(n) \cdot g(n))$
+
+    This is the reason why nested loops have a running time of $O(n^k)$ for some positive integer $k$.
+
+These identities are commonly used to simplify the discussion of functions, usually ones that describe algorithm running times. For example, given $T(n) = 10n^3 + 2n^2 + 5$,
+
+    $$
+    \begin{align*}
+    \textrm{Big-O running time} &= O(10n^3) + O(2n^2) + O(5) \\
+    &= O(n^3) + O(n^2) + O(1) \\
+    &= O(\textrm{max}(n^3, n^2, 1)) \\
+    &= O(n^3).
+    \end{align*}
+    $$
+
+We can then simply say that the algorithm runs in $O(n^3)$ time. Expressing an algorithm's running time in terms of simpler functions enables us to talk about
+Of course, we actually don't deal with getting the big-O version of $T(n)$
+in practice; instead, we simply figure out that a certain segment of code is $O(f(n))$ because the number of steps it takes to run should result in a function that would be $O(f(n))$.
+
+This is good and all, but it still leaves a lot of questions regarding where exactly did this Big-O notation come from. In the first place, what does it mean for a function to dominate another? When can we say that it does? And what does $O(f(n))$ even *mean*, intuitively? Is it a function in itself, or is it something different?
+
+# Formal definition
+
+To solve these questions, let's go back to how we originally observed the usefulness of Big-O notation. Let's say we have a function $T(n)$ describing the worst-case running time of an algorithm, whose graph looks somewhat like this:
+
+![](img/a01-graph1.png width="500px")
+
+This function's running time looks a bit complex, so it would be nice to have a simpler function that could give a good estimate as to how fast $T(n)$ grows; an upper bound, if you will. Let's designate that function as $c \cdot f(n)$, where $c$ is a constant positive coefficient. (Why this $c$ exists, we'll explain later.)
+
+![](img/a01-graph2.png width="500px")
+
+Observe that at a certain point, when $n = n_0$, the function $c \cdot f(n)$ is clearly greater than $T(n)$:
+
+![](img/a01-graph3.png width="500px")
+
+Past a certain point, the function $c \cdot f(n)$ can then be said to be an *upper bound* for $T(n)$, since we're guaranteed that $T(n) \leq c \cdot f(n)$ for all $n \geq n_0$.
+
+Notice that in this case, our choice of $c$ doesn't matter. Increase or decrease $c$, and the location of $n_0$ shifts accordingly:
+
+![](img/a01-graph4.png width="500px")
+
+It's enough, though, to guarantee the existence of a certain $c$, and find a corresponding $n_0$ that satisfies the upper-bound property above.
+
+With this, we can finally state the formal definition of big-O notation:
+
+!!! :Definition
+    Let $T(n)$ and $f(n)$ be functions defined in terms of $n$, with $T(n), f(n) \geq 0 \,\forall n \geq 0$ and $\lim_{n\to\infty} T(n) = \lim_{n\to\infty} f(n) = \infty$. We can say that
+
+    $$T(n) = \O(f(n))$$
+
+    if there exists a $c, n_0 \in \Real^+$ such that $c \cdot f(n) \geq T(n)$ for all $n \geq n_0$.
+
+Pay attention to the conditions for $T(n)$ and $f(n)$; it must be an always-positive function that tends towards infinity as $n$ increases. Without these conditions, the concept of an "upper bound" cannot be defined. (Why?)
+
+# Proofs involving big-O
+
+This formal definition allows us to more rigorously and formally reduce complicated functions into "big-O" of simpler ones. In fact, we can create direct proofs to show that a certain function $f(n)$ is $\O(g(n))$. For example:
+
+!!! Tip: Problem 1.
+    Prove that $5x^2 + 2x + 10$ is $\O(x^2)$.
+
+    **Solution.** Big-O proofs simply require that you match up the variables in the formal definition to the functions that you have. In this case, let's have $T(x) = 5x^2 + 2x + 10$ and $f(x) = x^2$.
+
+    The formal definition says that we need to find some $c, x_0 \in \Real^+$ such that
+    $$c \cdot x^2 \geq 5x^2 + 2x + 10$$
+    for some $x \geq x_0$.
+
+    First, we figure out what $c$ to use. Anything less than or equal to 5 wouldn't work, since
+
+    $$5x^2 + 2x + 10 \geq 5x^2$$
+
+    doesn't hold true for any value of $x$. (To prove this, use induction.) But 6 would work, since
+
+    $$
+    \begin{align*}
+    5x^2 + 2x + 10 &\geq 6x^2 \\
+    2x + 10 &\geq x^2
+    \end{align*}
+    $$
+
+    does hold true when $x$ is greater than a certain number. Now, we could solve for the values of $x$ that satisfy this inequality, but why bother? We could simply pull an $x_0$ out of thin air and easily verify that the inequality does satisfy for all $x \geq x_0$. In this case, let $x_0 = 100$; we have then completed our proof. All that's left is to state it more formally; here's one possible formulation of your resulting proof.
+
+    *Proof*. Let $c = 6$ and $x_0 = 100$. Then
+
+    $$
+    \begin{align*}
+    5x^2 + 2x + 10 &\geq 6x^2 \\
+    2x + 10 &\geq x^2
+    \end{align*}
+    $$
+
+    is true for all $x \geq x_0 = 100$. By the definition of big-O notation, this means that $x^2$ is a suitable upper bound for the function, that is, $5x^2 + 2x + 10 = O(x^2)$. $\blacksquare$
+
+    Notice that we didn't bother proving the fact that $2x + 10 \geq x^2$ for all $x \geq 100$; we simply assumed that it was true. If you do want a more rigorous proof of the validity of the inequality, though, you can either use induction or basic algebraic rules.
+
+We can also use the formal definition to prove some identities regarding big-O notation:
+
+!!! Tip: Problem 1.
+    Prove that $\O(c \cdot f(x)) = \O(f(x))$.
+
+    **Solution.** It's first important to know that big-O notation describes a family of functions; that is, when we say $T(x) = \O(f(x))$, we say that $T(x)$ belongs to the set of functions that have upper bound $k \cdot f(x)$ for some $k$. That is, in reality, $T(x) \in \O(f(x))$, although we simply use the equals sign since it's easier to talk about it that way.
+
+<script>
+window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
+ga('create', 'UA-68097958-3', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+<script>
+window.markdeepOptions = {
+    tocStyle: 'medium'
+}
+</script>
+
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github-gist.min.css">

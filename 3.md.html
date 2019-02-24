@@ -179,6 +179,8 @@ int main() {
 
 You'd expect it to output 15, but instead it's printing a garbage value. That's because you accidentally accessed an element outside the array: you looped from indexes 0 to 5, *including* 5, and arr[5] is outside the array. This is another frequent source of `Segmentation fault`s or garbage values, so watch out for things like this in your code.
 
+<!-- TODO add arrays as function args --->
+
 ## Multidimensional arrays
 
 Like in Python, we can also declare multidimensional arrays, i.e. arrays of arrays:
@@ -401,7 +403,7 @@ p is now 0x143c0ffef0
 *            '--* int *p
 *****************************************
 
-Note that the pointer actually moved 4 bytes to the left (`ec` to `f0`), not just 1. `p++` does **not** simply increment by one byte:
+Note that the pointer actually moved 4 bytes to the right (`ec` to `f0`), not just 1. `p++` does **not** simply increment by one byte:
 
 *****************************************
 *
@@ -628,7 +630,46 @@ arr[4] contains 5
 
 Notice that we made another pointer that points to where `arr` points, instead of just using `arr`. Remember: while `arr` *functions* like a pointer, it is still an array, *not* a pointer. We can't move `arr` itself, so we need to make another pointer and move that instead.
 
-*More examples soon!*
+Now that we have a pointer that we can move around the array, we can access and modify the elements of the array through the pointer:
+
+<div class="split">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int arr[5] = {1, 2, 3, 4, 5};
+    int *pa = arr;
+    for (int i = 0; i < 5; i++) {
+        cout << "arr[" << i << "] lives at " << pa << endl;
+        cout << "arr[" << i << "] contains " << *pa << endl;
+        pa++;
+    }
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```
+arr[0] lives at 0x66fdd0
+arr[0] contains 1
+arr[1] lives at 0x66fdd4
+arr[1] contains 2
+arr[2] lives at 0x66fdd8
+arr[2] contains 3
+arr[3] lives at 0x66fddc
+arr[3] contains 4
+arr[4] lives at 0x66fde0
+arr[4] contains 5
+```
+
+</div>
+</div>
 
 ## Pointers and 2D arrays
 

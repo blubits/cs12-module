@@ -12,7 +12,8 @@
   <meta name="twitter:site" content="@mnbatara3_" />
   <meta name="twitter:title" content="CS 12 lecture notes" />
   <meta name="twitter:description" content="Notes for UP Diliman's second course for CS majors." />
-  <meta name="twitter:image" content="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjF9" />
+  <meta name="twitter:image"
+    content="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjF9" />
 
   <!-- CSS -->
   <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
@@ -28,60 +29,98 @@
 </head>
 <body class="sans-serif">
 
-  <div class="pv5 pv6-ns ph4 white bg-navy flex flex-column items-center justify-center">
-    <h1 class="f3 f2-ns">CS 12 lecture notes</h1>
-    <p class="f5 f4-ns measure lh-copy">Lecture notes for Computer Science 12, the second programming course for CS
-      majors in
-      the University
-      of the Philippines - Diliman.</p>
+  <div class="pv4 pv5-ns ph5 ph4-m ph3-l navy bg-black-05 flex flex-column items-center justify-center shadow-2">
+    <h1 class="f2 zilla-slab">CS 12 lecture notes</h1>
+    <a href="https://github.com/blubits/cs12-module" class="bg-navy pv2 ph3 dim link white">View on GitHub 🔗</a>
   </div>
 
-  <section class="pt2 pt4-ns flex justify-center">
-    <ul class="w-100 w-80-m w-40-l f5 f3-ns list lh-copy lh-big-ns gray mv0">
-      <li class="pt4 pb3 pt3-ns pb4-ns">
-        <p class="f6 f5-ns black ma0 lh-copy">
-          <!-- New Jan xx: Arrays as function arguments, algorithm analysis. -->
-          <span class="fw7">New Jan 23:</span> better visualizations, return-by-reference, arrays as pointers,
-          algorithm analysis. <a href="https://github.com/blubits/cs12-module" class="link dark-blue">View on GitHub 🔗</a>
-        </p>
+  <section class="pt4 w50 flex flex-column items-center">
+    <p class="f5 black mh5 lh-copy">
+      <!-- New Jan xx: Arrays as function arguments, algorithm analysis. -->
+      <span class="fw7">🆕 Feb 25:</span> Structs, classes, and enumerations; algorithm analysis. More coming soon!
+    </p>
+    <div class="toc flex flex-wrap mt3">
+      <div class="mh4">
+        <h2 class="zilla-slab f3 mb3 pb2">Introduction to C++</h2>
+        <ul class="list pa0">
+          <li class="mv2"><a href="setup.md.html" class="link dark-blue dim">Setting up C++</a></li>
+          <li class="mv2"><span class="mr2 fw7">1</span>
+            <a href="1.md.html" class="link dark-blue dim">C++ for Python programmers</a></li>
+          <li class="mv2"><span class="mr2 fw7">2</span>
+            <a href="2.md.html" class="link dark-blue dim">Pointers</a></li>
+          <li class="mv2"><span class="mr2 fw7">3</span>
+            <a href="3.md.html" class="link dark-blue dim">Arrays</a></li>
+          <li class="mv2"><span class="mr2 fw7">4</span>
+            <a href="4.md.html" class="link dark-blue dim">Algorithm analysis</a></li>
+          <li class="mv2"><span class="mr2 fw7">5</span>
+            <a href="#" class="link gray strike">Strings</a></li>
+          <li class="mv2"><span class="mr2 fw7">6</span>
+            <a href="#" class="link gray strike">Streams</a></li>
+          <li class="mv2"><span class="mr2 fw7">7</span>
+            <a href="#" class="link gray strike">Dynamic memory allocation</a></li>
+          <li class="mv2"><span class="mr2 fw7">8</span>
+            <a href="8.md.html" class="link dark-blue dim">Structs, classes, and enumerations</a></li>
+          <li class="mv2"><span class="mr2 fw7 green">A1</span>
+            <a href="a1.md.html" class="link dark-blue dim">Formalities of asymptotic notation</a></li>
+        </ul>
+      </div>
+      <div class="mh4">
+        <h2 class="zilla-slab f3">C++ standard library</h2>
+        <ul class="list pa0">
+          <li class="mv2"><span class="mr2 fw7">9</span>
+            <a href="#" class="link gray strike">Linear data structures</a></li>
+          <li class="mv2"><span class="mr2 fw7">10</span>
+            <a href="#" class="link gray strike">Iterators</a></li>
+          <li class="mv2"><span class="mr2 fw7">11</span>
+            <a href="#" class="link gray strike">Non-linear data structures</a></li>
+        </ul>
+      </div>
+      <div class="mh4">
+        <h2 class="zilla-slab f3">Programming paradigms</h2>
+        <p class="o-50">🚧 Coming soon!</p>
+      </div>
+      <div class="mh4">
+        <h2 class="zilla-slab f3">Software engineering</h2>
+        <p class="o-50">🚧 Coming soon!</p>
+      </div>
+    </div>
+    <!-- <ul class="w-100 w-80-ns f5 f3-ns list lh-copy lh-big-ns gray mv0">
+      <li class="pv2">
+        <p class="f6 f5-ns ma0 lh-title black fw7">🆕 Week 4</p>
+        <a href="8.md.html" class="link dark-blue fw7 f5 f3-ns">Structs, classes, and enumerations</a>
       </li>
       <li class="pv2">
-        <p class="f6 f5-ns ma0 lh-title black">Preface</p>
-        <a href="setup.md.html" class="link dark-blue fw5 f5 f3-ns">Setting up C++</a>
+        <p class="f6 f5-ns ma0 lh-title black fw7">🆕 Week 4</p>
+        <a href="#" class="link gray strike fw7 f5 f3-ns">Dynamic memory allocation</a>
+      </li>
+      <li class="pv2">
+        <p class="f6 f5-ns ma0 lh-title black">Week 3</p>
+        <a href="#" class="link gray strike f5 f3-ns">Streams</a>
+      </li>
+      <li class="pv2">
+        <p class="f6 f5-ns ma0 lh-title black">Week 3</p>
+        <a href="#" class="link gray strike f5 f3-ns">Strings</a>
+      </li>
+      <li class="pv2">
+        <p class="f6 f5-ns ma0 lh-title black">Week 2</p>
+        <a href="4.md.html" class="link dark-blue f5 f3-ns">Algorithm analysis</a>
+      </li>
+      <li class="pv2">
+        <p class="f6 f5-ns ma0 lh-title black">Week 2</p>
+        <a href="3.md.html" class="link dark-blue f5 f3-ns">Arrays</a>
+      </li>
+      <li class="pv2">
+        <p class="f6 f5-ns ma0 lh-title black">Week 2</p>
+        <a href="2.md.html" class="link dark-blue f5 f3-ns">Pointers</a>
       </li>
       <li class="pv2">
         <p class="f6 f5-ns ma0 lh-title black">Week 1</p>
         <a href="1.md.html" class="link dark-blue f5 f3-ns">C++ for Python programmers</a>
       </li>
       <li class="pv2">
-        <p class="f6 f5-ns ma0 lh-title black fw7">Week 2</p>
-        <a href="2.md.html" class="link dark-blue fw7 f5 f3-ns">Pointers</a>
-      </li>
-      <li class="pv2">
-        <p class="f6 f5-ns ma0 lh-title black fw7">Week 2</p>
-        <a href="3.md.html" class="link dark-blue fw7 f5 f3-ns">Arrays</a>
-      </li>
-      <li class="pv2">
-        <p class="f6 f5-ns ma0 lh-title black fw7">Week 2</p>
-        <a href="4.md.html" class="link dark-blue fw7 f5 f3-ns">Algorithm analysis</a>
-      </li>
-      <li>Strings</li>
-      <li>Streams</li>
-      <li>Structs & unions</li>
-      <li>Classes</li>
-      <li>Clean coding conventions</li>
-      <li>Abstract data types</li>
-      <li>Version control</li>
-      <li>Test-driven development</li>
-      <li>Recursion</li>
-      <li>Divide & conquer</li>
-      <li>Exhaustive search & backtracking</li>
-      <li>Dynamic programming</li>
-      <li>Greedy algorithms</li>
-      <li>Object-oriented programming</li>
-      <li>Design patterns</li>
-      <li>Threads</li>
-    </ul>
+        <p class="f6 f5-ns ma0 lh-title black">Preface</p>
+        <a href="setup.md.html" class="link dark-blue f5 f3-ns">Setting up C++</a>
+      </li> -->
   </section>
 
   <!-- JS -->

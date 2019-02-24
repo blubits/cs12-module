@@ -1,0 +1,639 @@
+<meta charset="utf-8">
+
+**Structs, classes, and enumerations**
+
+C++'s most powerful feature is the **class**. Similar to Python, classes enable you to bundle properties that define a certain kind of object with methods that operate on these properties. C++ was built with classes in mind from the ground up, so it's actually fairly easy to declare your own.
+
+# Python's classes
+
+Before that, though, let's take a look at how we declared classes in Python:
+
+<div class="split-vertical">
+<div>
+**Code**
+
+```python
+class Dog:
+
+    def __init__(self, name, sex, breed):
+        self.name = name
+        self.sex = sex
+        self.breed = breed
+        self.call = "Bork!"
+
+    def introduce(self):
+        print("Hi, I'm {0}, a {1} {2}!".format(self.name, self.sex, self.breed))
+
+    def talk(self):
+        print(self.call)
+
+my_dog = Dog("Fido", "male", "golden retriever")
+my_dog.introduce()
+my_dog.call = "Woof!"
+my_dog.talk()
+
+```
+</div>
+<div>
+**Output**
+
+```markdown
+Hi, I'm Fido, a male golden retriever!
+Woof!
+```
+
+</div>
+</div>
+
+To tell Python we're making a class, we write the `class` keyword, followed by the name of the class. What follows is a set of functions, or *methods*, that dictate the operations we can do on the class.
+
+The `__init__` method is a special type of method, called the **constructor**, and it is where you declare the properties or **attributes** of the class, or the variables that the class uses to determine its state.
+
+To access a class's methods or attribute, we can simply use the dot operator `.`, like `my_dog.call` or `my_dog.talk()`. We can then treat these as regular function calls or variables, so we can call methods as functions or assign new values to variables.
+
+It's important to note that, when we declared the methods in the initial class definition, we need to add `self` as the first argument. That's because when you call objects in Python like this,
+
+```python
+my_dog.introduce()
+```
+
+internally your interpreter will run it as
+
+```python
+Dog.introduce(my_dog)
+```
+
+The methods you implement in your class stay in your class; they don't get "copied" over to the object, unlike what the syntax we currently have implies. This is more efficient on Python's end, but you'll find that C++ doesn't work that way exactly. More on that in a while.
+
+# Structs
+
+First, let's examine **structs**. Short for "structures", structs are a way to bundle multiple variables into a single data type, not unlike Python's classes.
+
+<div class="split-vertical">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Dog {
+    string name;
+    int age;
+    string breed;
+};
+
+int main() {
+    Dog my_dog;
+    my_dog.name = "Fido";
+    my_dog.age = 7;
+    my_dog.breed = "golden retriever";
+    cout << "Hi, I'm " << my_dog.name << ", a " << my_dog.age << "-year old " << my_dog.breed << "!" << endl;
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```markdown
+Hi, I'm Fido, a 7-year old golden retriever!
+```
+
+</div>
+</div>
+
+To declare a struct, we use the `struct` keyword before the name of our new struct. Inside curly braces, we indicate the variables we want to belong to our struct; as seen above, data types can be mixed. After the end curly brace, it's important to have a semicolon `;` ending the expression; since we're declaring a struct, the entire expression is just a statement like any other.
+
+Once we've declared a struct, we can use it just like any other data type. We can access and manipulate the attributes of the struct using the dot notation `.` just like in Python.
+
+Notice that the variables that are part of the struct are declared *outside* of any method. In the Python example earlier, we initialized our properties inside the constructor. But in C++, initialization is different from declaration, so we first have to initialize our struct's attributes somewhere. Doing this in the body of the struct itself, outside any function, ensures that these variables are accessed within the "scope" of the struct, and its instances by extension. You'll see a better example of this when we move on to classes.
+
+This means we can't declare new attributes on the whim. In Python, doing this is valid:
+
+```python
+class Point:
+    pass
+
+p = Point()
+p.x = 5
+p.y = 7
+```
+
+This is because Python is more flexible with creating properties on the fly. In C++, however, the attributes you declare initially are fixed, so this code will result in a compiler error:
+
+```cpp
+struct Point {
+    int a;
+};
+
+int main() {
+    Point p;
+    p.x = 5;
+    p.y = 6;
+}
+```
+
+# Classes
+
+Classes in C++ work very similarly to structs: simply replace `struct` with `class`.
+
+```cpp
+class Dog {
+    string name;
+    int age;
+    string breed;
+};
+```
+
+When you try accessing elements with the dot operator, however, you might run into a compilation error like this:
+
+```cpp
+error: 'name' is a private member of 'Dog'
+    my_dog.name = "Fido";
+           ^
+```
+
+What's happening here? Unlike in Python, C++ (along with most languages with classes) have something called **visibility modifiers**. These modifiers dictate whether the attributes we declare in our class. **Private** members of a class can only be accessed and modified by methods and attributes within the same class, while **public** members can be modified outside of the class.
+
+Visibility modifiers act as a "filter" for the members of a class. Setting a certain method or class as private enables us to have control over how they can be changed by future programmers who want to use classes we define, or hide methods that are part of the internal workings of the class and should not be accessed outside of it.
+
+In Python, all properties are forced to be public; in C++, they are private by default. To set the visibility of our class members on our own, we can simply use the `public:` and `private:` keywords:
+
+```cpp
+class Dog {
+   public:
+    string name;
+    int age;
+    string breed;
+
+   private:
+    string greeting;
+};
+```
+
+Everything below the `public:` keyword until the next `private:` keyword is accessible outside the class, while everything below the `private:` keyword is only accessible within the class. Attributes not under any visibility modifier are private by default.
+
+# Methods
+
+Methods, like attributes, can also be declared inside classes. You can declare them inside classes like you would with regular C++ functions, and call them with the dot `.` operator like you would with attributes.
+
+<div class="split-vertical">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Dog {
+   private:
+    string name;
+    int age;
+    string breed;
+    string call;
+
+   public:
+    Dog(string n, int a, string b) {
+        name = n;
+        age = a;
+        breed = b;
+        call = "Bork!";
+    }
+
+    void introduce() {
+        cout << "Hi, I'm " << name << ", a " << age << "-year old " << breed
+             << "!" << endl;
+    }
+
+    void talk() {
+        cout << call << endl;
+    }
+};
+
+int main() {
+    Dog my_dog("Fido", 7, "golden retriever");
+    my_dog.introduce();
+    my_dog.talk();
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```markdown
+Hi, I'm Fido, a 7-year old golden retriever!
+Bork!
+```
+
+</div>
+</div>
+
+Like functions in C++, we still have to indicate the method name, return type, and a list of arguments with their types, if applicable. Methods, however, are affected by visibility modifiers: private methods can't be called outside the class, but public methods can.
+
+Constructors in C++ are special in that you don't need to specify a return type, since it's a special method for the class. The name of the constructor, however, must be the same as the class itself; this is how C++ will know which method constructs a class instance.
+
+Note that we didn't need to access the attributes of the class instance through `self` or similar keywords, and we didn't have to make the first arguments of our methods always be `self`. C++ will implicitly insert that for you, so you can access the attributes of the instance just like local variables in the function. In other words, the attributes of an instance are always in the scope of its methods, so you may use it like you would any other variable. This functionality does mean that you will have to be more careful in avoiding name clashes, especially between your method argument names and the names of your attributes.
+
+Instead of declaring the functions inside the class itself, we could opt to write function prototypes instead:
+
+```cpp
+class Dog {
+   private:
+    string name;
+    int age;
+    string breed;
+    string call;
+
+   public:
+    Dog(string n, int a, string b);
+    void introduce();
+    void talk();
+};
+```
+
+We can then declare these functions later on in our program. Appending the class's name as a namespace through the `::` operator will tell C++ that we're trying to change this function itself:
+
+```cpp
+void Dog::talk() {
+    cout << call << endl;
+}
+```
+
+Attributes can be accessed as if the functions were declared within the class itself.
+
+## Constructors
+
+In Python, we implemented constructors via the `__init__` method:
+
+```python
+class Dog:
+
+    def __init__(self, name, age, breed):
+        self.name = name
+        self.age = age
+        self.breed = breed
+        self.call = "Bork!"
+```
+
+We can then make new instances of the class by doing this:
+
+```python
+my_dog = Dog("Fido", 7, "golden retriever")
+```
+
+Constructors in Python do the heavy work of making our class's attributes. In C++, though, properties have already been initially declared for you. The constructor's purpose, then, is to simply give them some initial values.
+
+```cpp
+Dog::Dog(string n, int a, string b) {
+    name = n;
+    age = a;
+    breed = b;
+}
+```
+
+We can then initialize a new `Dog` by doing this:
+
+```cpp
+Dog my_dog("Fido", 7, "golden retriever");
+```
+
+We place the initial values as arguments to the variable, like we're calling a function (and we are; we're calling the class's constructor when we do this).
+
+In Python, we could only implement a single constructor through `__init__`, so implementing multiple constructors, say for different types of arguments, is a bit tricky. In C++, though, constructors can be easily overloaded much like functions. So making multiple constructors that do different things - one with default values and one with programmer-defined values, for example - is easy:
+
+```cpp
+Dog::Dog() {
+    name = "Fido";
+    age = 7;
+    breed = "golden retriever";
+}
+
+Dog::Dog(string n, int a, string b) {
+    name = n;
+    age = a;
+    breed = b;
+}
+```
+
+A constructor with no arguments will be called when you initialize a new instance of the class without any arguments, like
+
+```
+Dog my_dog;
+```
+
+## Destructors
+
+If constructors set up the attributes of the class, **destructors** clean them up when needed:
+
+```cpp
+Dog::~Dog() {
+    cout << "Dog is being removed :(" << endl;
+}
+```
+
+The destructor will be called when the class instance goes out of scope in a function, when the program ends, or when manually `delete`d. Because of this, make sure your destructors don't accept any arguments, since it will be called automatically.
+
+Implementing a destructor in your class is useful for a few reasons. For example, if you declare heap-allocated variables in your constructor:
+
+```cpp
+Vector::Vector() {
+    data = new int[];
+}
+```
+
+`delete[]`ing it in your destructor will make sure that the memory your class allocates will always be freed when no longer needed:
+
+```cpp
+Vector::~Vector() {
+    delete[] data;
+}
+```
+
+## Mutators
+
+Recall that, in C++, we usually set our class attributes as private attributes, so we can control how they are changed. Implementing **mutator** methods allows users of our class to still change its properties, while still allowing us to have some control over how they are changed.
+
+Mutator methods usually consist of a **getter**, which retrieves a certain property of our class, and a **setter**, or a way to change that property:
+
+```cpp
+string Dog::get_name() {
+    return name;
+}
+
+void Dog::set_name(string n) {
+    name = n;
+}
+```
+
+Letting functions control how our instance's attributes are changed. For example, we can filter out undesirable values from being set in our class:
+
+```cpp
+int Dog::get_age() {
+    return age;
+}
+
+void Dog::set_age(int a) {
+    if (a < 0) {
+        cout << "That's an invalid age!" << endl;
+    } else {
+        age = a;
+    }
+}
+```
+
+Leaving out the setter allows us to make "read-only" properties, that can be set only once during construction and can never be changed again:
+
+```cpp
+// We can't set a new breed for the dog, since
+// we haven't implemented a set_breed() class.
+string Dog::get_breed() {
+    return breed;
+}
+```
+
+And if you leave out both the getter and setter, you can effectively create attributes "internal" to the class, which you can use to keep track of information you don't want the user to see but are still important in your code.
+
+## Advanced class features
+
+C++'s classes have more features that make it a very powerful class-based (or **object-oriented**) programming language, including the following:
+
+* **Operator overloading**, allowing our classes to support C++'s operators like `+` and `-`;
+* **Templates** that allow classes to have different types as arguments, depending on what the programmer needs;
+* **Friend functions**, functions outside a class that can peek at the private members of that class;
+* Various kinds of features for constructors, including **list constructors**, **copy constructors**, and **initializer lists**;
+* And a lot more obscure class features that are useful in certain contexts.
+
+There are a lot of resources online that can help you learn these if you need, but right now the basic features above will get you through most problems you encounter when programming in C++.
+
+# Classes and memory
+
+Like any other data type, structs and classes also live in memory, and therefore pointers can be declared to where instances of these are located in memory:
+
+<div class="split-vertical">
+<div>
+**Code**
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Point {
+   private:
+    int x;
+    int y;
+
+   public:
+    Point(int a, int b);
+    int get_x();
+    int get_y();
+};
+
+Point::Point(int a, int b) {
+    x = a;
+    y = b;
+}
+
+int Point::get_x() { return x; }
+int Point::get_y() { return y; }
+
+int main() {
+    Point p1(0, 0);
+    cout << "p1 lives at " << &p1 << endl;
+    cout << "The size of p1 is " << sizeof(p1) << endl;
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```markdown
+p1 lives at 0x66fe08
+The size of p1 is 8
+```
+
+</div>
+</div>
+
+To access the methods of a pointer to a class, we can dereference it with the `*` operator and then use the dot `.` operator normally:
+
+```cpp
+(*p1).get_x();
+```
+
+Since you will need to do this a lot, C++ offers the `->` operator, which does the same thing; dereference a pointer and then give access to the methods and attributes within it;
+
+```cpp
+p1->get_x();
+```
+
+We can also declare references to class instances, and we can use these references just like any other instance:
+
+```
+Point &p2 = p1;
+cout << p2.get_x() << endl;
+```
+
+Having a pointer or reference to a class is useful in many situations. For example, when classes are arguments to functions, these classes are simply "copied over" to the scope of the class, effectively making a new object. Therefore, changes made to an instance inside a function won't actually change the instance:
+
+<div class="split">
+<div>
+**Code**
+
+```cpp
+void zero_out(Point p) {
+    p.set_x(0);
+    p.set_y(0);
+}
+
+int main() {
+    Point p1(5, 0);
+    zero_out(p1);
+    cout << p1.get_x() << " " << p1.get_y() << endl;
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```markdown
+5 0
+```
+
+</div>
+</div>
+
+By changing the argument types into pointers or references to a class, we can then easily change the instance inside the function:
+
+<div class="split">
+<div>
+**Code**
+
+```cpp
+void zero_out(Point *p) {
+    p->set_x(0);
+    p->set_y(0);
+}
+
+int main() {
+    Point p1(5, 0);
+    zero_out(&p1);
+    cout << p1.get_x() << " " << p1.get_y() << endl;
+    return 0;
+}
+```
+</div>
+<div>
+**Output**
+
+```markdown
+0 0
+```
+
+</div>
+</div>
+
+Even if you don't need to change the instance itself, changing the data type of our function arguments to a constant reference will prevent it from being copied over to the function, which can get very expensive. This is helpful not only for classes that we implement, but also classes in the standard library, like `string`.
+
+```cpp
+void print(const Point& p) {
+    cout << "Point(" << p.get_x() << ", " << p.get_y() << ")" << endl;
+}
+```
+
+## The `this` pointer
+
+Notice that the size of the `Point` instance we implemented earlier is only 8 bytes, equivalent to the combined size of our two `int` attributes. This is a consequence of how C++ makes instances to objects; when we make a new `class` or `struct`, we make a copy of its attributes so we can store and manipulate it on our own:
+
+*****************************************************************
+*
+*            .--* int *p1.x      .--* int *p1.y
+*            |                   |
+*            v                   v
+*  +----+----+-------------------+-------------------+----+
+*       |    |                5  '                 0 |
+*  +----+----+-------------------+-------------------+----+
+*            ^
+*            |
+*            '--* Point *p1
+*
+*****************************************************************
+
+The actual methods of our class instance are stored separate from the instance itself, similar to what Python does; this enables our classes to be memory-efficient and saves us from needing to copy big methods around. When we call a method like
+
+```
+p1.get_x();
+```
+
+C++ is actually converting it into this function call:
+
+```
+get_x(Point* this);
+```
+
+An implicit first argument, a pointer to the instance we're trying to refer to, is passed into the method we're trying to call (which is actually just a function!) This is very similar to Python's `self` argument, except we don't have to indicate it when we make our classes, since C++ will do so by itself.
+
+We can access this implicit `this` argument when we implement our methods, though. This allows us to, for example, have argument names that conflict with our attribute names:
+
+```
+Point::Point(int x, int y) {
+    this->x = x;
+    this->y = y;
+}
+```
+
+Since we're still accessing our attributes inside of the scope of our class, this won't throw an error, even if `x` and `y` are private attributes.
+
+# Enumerations
+
+Lastly, we'll look at a sister construct of the struct and class; the **enumeration**. Commonly when we implement our programs, we need to keep track of the state or type of a certain object. For example, say we want to represent the suit of a playing card in code. Without enumerations, we could declare integer constants that represent each suit, like this:
+
+```cpp
+const int DIAMONDS = 1;
+const int HEARTS = 2;
+const int SPADES = 3;
+const int CLUBS = 4;
+```
+
+We could then use it in code, like this:
+
+```cpp
+int card_type = DIAMONDS;
+if (card_type == DIAMONDS) {
+    // do something
+} ...
+```
+
+Enumerations allow us to implement types like this in code, without having to manually create constants for each type:
+
+```cpp
+enum Suit {
+    DIAMONDS, HEARTS, SPADES, CLUBS
+};
+```
+
+We could then
+
+<script>
+window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
+ga('create', 'UA-68097958-3', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+<script>
+window.markdeepOptions = {
+    tocStyle: 'medium'
+}
+</script>
+
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github-gist.min.css">

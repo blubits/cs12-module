@@ -259,11 +259,11 @@ You can see that, in the visualization, the pointer `p` literally points to `a`.
 *
 *        .-------------------.
 *        |                   |
-*        |                   o int *p;
-*        v int a;
+*        | int a;            o int *p;
+*        v
 *   c3   c4   c5   c6   c7   c8...
 *  +----+----+----+----+----+---------------+
-*  |    |  0 |  0 |  0 |  5 |   0xfff000bc4 |
+*       |                 5 |   0xfff000bc4
 *  +----+----+----+----+----+---------------+
 *                            \_____________/
 *
@@ -525,13 +525,13 @@ In effect, references are just aliases for variables; we don't have to reference
 *
 *  0xfff000b__:
 *
-*         .--o int &r;
-*         |
-*         v
-*        int a;
+*       .--o int &r;
+*       |
+*       +--o int a;
+*       v
 *   c3   c4   c5   c6   c7   c8   c9   ca   cb   cc    cd
 *  +----+----+----+----+----+----+----+----+----+----+----+
-*  |    |  0 |  0 |  0 |  5 |    |    |    |    |    |    |
+*       |                 5 |    |    |    |    |    |
 *  +----+----+----+----+----+----+----+----+----+----+----+
 *
 *
